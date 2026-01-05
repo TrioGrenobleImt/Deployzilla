@@ -290,7 +290,8 @@
         "actions_type": {
           "create": "Créer",
           "update": "Modifier",
-          "delete": "Supprimer"
+          "delete": "Supprimer",
+          "env-vars": "Modifier les variables d'environnement"
         },
         "status": {
           "active": "Actif",

@@ -90,6 +90,10 @@ export const getColumns = (callback: (action: string, data: any) => void, t: TFu
               {t("pages.admin.projects_page.copy_id")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => callback("env-vars", project._id)}>
+              <Edit className="mr-2 h-4 w-4" />
+              {t("Manage Env Vars")}
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => callback("update", project._id)}>
               <Edit className="mr-2 h-4 w-4" />
               {t("pages.admin.projects_page.update_project")}

@@ -4,6 +4,7 @@ export interface ProjectInterface {
   repoUrl: string;
   branch: string;
   autoDeploy: boolean;
+  envVars?: { key: string; value: string }[];
   createdAt?: string;
   updatedAt?: string;
 }

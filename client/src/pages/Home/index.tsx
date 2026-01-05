@@ -7,6 +7,7 @@ import { DeploymentHistory, DeploymentRecord } from "./components/DeploymentHist
 import { Zap, Activity, Shield, Terminal, FolderPlus, UserCog } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useAuthContext } from "@/contexts/authContext";
+import { useSocketContext } from "@/contexts/socketContext";
 import { useProjectContext } from "@/contexts/projectContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -14,34 +15,46 @@ import { useNavigate } from "react-router-dom";
 export const Home = () => {
   const { t } = useTranslation();
   const { authUser } = useAuthContext();
+  const { socket } = useSocketContext();
   const { selectedProject, projects, loading } = useProjectContext();
   const navigate = useNavigate();
   const [isDeploying, setIsDeploying] = useState(false);
 
-  // Mock Data
-  const [stages, setStages] = useState<PipelineStage[]>([
-    { id: "1", name: "Source", status: "success", duration: "12s", icon: Zap },
-    { id: "2", name: "Build", status: "success", duration: "1m 45s", icon: Activity },
-    { id: "3", name: "Tests", status: "success", duration: "2m 10s", icon: Shield },
-    { id: "4", name: "Docker", status: "running", icon: Terminal },
+  // Initial Stages
+  const initialStages: PipelineStage[] = [
+    { id: "1", name: "Source", status: "pending", icon: Zap },
+    { id: "2", name: "Build", status: "pending", icon: Activity },
+    { id: "3", name: "Tests", status: "pending", icon: Shield },
+    { id: "4", name: "Docker", status: "pending", icon: Terminal },
     { id: "5", name: "Deploy", status: "pending", icon: Zap },
-  ]);
+  ];
 
-  const [logs, setLogs] = useState<LogEntry[]>([
-    { id: "1", timestamp: "10:55:01", level: "info", message: "Fetching source from GitHub...", step: "Source" },
-    {
-      id: "2",
-      timestamp: "10:55:14",
-      level: "success",
-      message: "Source fetched successfully (branch: main, commit: 7f3a21b)",
-      step: "Source",
-    },
-    { id: "3", timestamp: "10:55:15", level: "info", message: "Installing dependencies...", step: "Build" },
-    { id: "4", timestamp: "10:56:45", level: "success", message: "Dependencies installed and optimized.", step: "Build" },
-    { id: "5", timestamp: "10:56:46", level: "info", message: "Running unit and integration tests...", step: "Tests" },
-    { id: "6", timestamp: "10:58:50", level: "success", message: "All tests passed (142/142).", step: "Tests" },
-    { id: "7", timestamp: "10:58:51", level: "info", message: "Building Docker image: deployzilla-dashboard:latest", step: "Docker" },
-  ]);
+  const [stages, setStages] = useState<PipelineStage[]>(initialStages);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("pipeline-log", (log: LogEntry) => {
+      setLogs((prev) => [...prev, log]);
+    });
+
+    socket.on("pipeline-status", ({ stageId, status }: { stageId: string; status: PipelineStage["status"] }) => {
+      setStages((prev) =>
+        prev.map((stage) => (stage.id === stageId ? { ...stage, status } : stage))
+      );
+    });
+
+    socket.on("pipeline-completed", () => {
+      setIsDeploying(false);
+    });
+
+    return () => {
+      socket.off("pipeline-log");
+      socket.off("pipeline-status");
+      socket.off("pipeline-completed");
+    };
+  }, [socket]);
 
   const history: DeploymentRecord[] = [
     {
@@ -77,7 +90,16 @@ export const Home = () => {
   ];
 
   const handleDeploy = () => {
-    setIsDeploying(true);
+    console.log("Handle deploy clicked");
+    if (!socket) {
+        console.error("Socket is null!");
+        return;
+    }
+    console.log("Emitting start-pipeline event");
+    setIsDeploying(true);setLogs([]);
+    setStages(initialStages); 
+    // Reset UI
+    socket.emit("start-pipeline");
     // Simulation logic could go here
     setTimeout(() => setIsDeploying(false), 5000);
   };
@@ -128,7 +150,10 @@ export const Home = () => {
             <Zap className="w-8 h-8 text-accent fill-accent" />
             {selectedProject?.name || t("pages.home.title")}
           </h1>
-          <p className="text-muted-foreground text-sm font-medium mt-2">{t("pages.home.description")}</p>
+          <p className="text-muted-foreground text-sm font-medium mt-1">{t("pages.home.description")}</p>
+          <p className="text-xs text-muted-foreground mt-1">
+             Socket Status: <span className={socket ? "text-green-500" : "text-red-500"}>{socket ? "Connected" : "Disconnected"}</span>
+          </p>
         </div>
         <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-muted-foreground border-l border-zinc-800 pl-4 h-10">
           <span>
