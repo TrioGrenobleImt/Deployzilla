@@ -23,11 +23,24 @@
       "active_commit": "Commit Actif",
       "branch": "Branche",
       "active_pipeline": "Pipeline Active",
+      "project_select_placeholder": "Sélectionner un projet",
+      "no_projects": "Aucun projet trouvé. Créez-en un dans Admin > Projets.",
       "deployment_controls": "Contrôles de déploiement",
       "system_health": {
         "title": "Santé du système",
         "uptime": "Disponibilité",
         "resp_time": "Temps de rép. moyen"
+      },
+      "empty_state": {
+        "admin": {
+          "title": "Aucun projet configuré",
+          "description": "Il semble que vous n'ayez pas encore ajouté de projets. Les projets sont le fondement de vos pipelines CI/CD.",
+          "button": "Gérer les projets"
+        },
+        "user": {
+          "title": "Aucun projet trouvé",
+          "description": "Vous n'avez pas encore accès à des projets. Veuillez contacter votre administrateur pour être affecté à un projet."
+        }
       },
       "pipeline": {
         "stages": {
@@ -168,6 +181,7 @@
       "home": "Accueil",
       "dashboard": "Tableau de bord",
       "users": "Utilisateurs",
+      "projects": "Projets",
       "settings": "Paramètres",
       "admin": "Admin",
       "logs": "Journaux",
@@ -260,6 +274,42 @@
           "delete": "Supprimer",
           "confirm_text_invalid": "Le texte de confirmation est incorrect"
         }
+      },
+      "projects_page": {
+        "title": "Gestion des projets",
+        "description": "Gérez vos projets de déploiement, vos dépôts et vos paramètres d'automatisation.",
+        "project": "Projet",
+        "a_project": "un projet",
+        "actions": "Actions",
+        "copy_id": "Copier l'ID du projet",
+        "copy_id_success": "ID du projet copié dans le presse-papiers",
+        "copy_webhook_success": "URL du webhook copiée dans le presse-papiers",
+        "delete_project": "Supprimer ce projet",
+        "update_project": "Modifier ce projet",
+        "webhook_url": "URL du webhook",
+        "actions_type": {
+          "create": "Créer",
+          "update": "Modifier",
+          "delete": "Supprimer"
+        },
+        "status": {
+          "active": "Actif",
+          "inactive": "Inactif"
+        },
+        "delete_description": "Êtes-vous sûr de vouloir supprimer le projet <strong>{{name}}</strong> ? Cette action est irréversible.",
+        "form": {
+          "name": "Nom du projet",
+          "repositoryUrl": "URL du dépôt",
+          "repositoryUrlEdit": "URL du dépôt (ajouter .git)",
+          "branch": "Branche",
+          "autoDeploy": "Déploiement automatique",
+          "defaultServerConfig": "Configuration serveur par défaut (JSON)",
+          "save": "Enregistrer",
+          "update": "Modifier",
+          "delete": "Supprimer",
+          "confirm_delete_label": "Tapez \"DELETE\" pour confirmer",
+          "confirm_delete_placeholder": "DELETE"
+        }
       }
     }
   },
@@ -286,13 +336,19 @@
         "username": "Nom d'utilisateur",
         "email": "Email",
         "role": "Rôle",
-        "auth_type": "Type d'authentification"
+        "auth_type": "Type d'authentification",
+        "name": "Nom",
+        "repoUrl": "URL du dépôt",
+        "branch": "Branche",
+        "autoDeploy": "Déploiement auto",
+        "webhookUrl": "URL du webhook"
       },
       "create_entity": "Créer une nouvelle entité",
       "delete_entity": "Supprimer toutes les entités",
       "filters": {
         "username": "Filtrer par nom d'utilisateur",
-        "message": "Filtrer par message"
+        "message": "Filtrer par message",
+        "name": "Filtrer par nom"
       },
       "delete_title": "Supprimer toutes les entités",
       "delete_description": "Êtes-vous sûr de vouloir supprimer toutes les entités ? Cette action est irréversible.",
@@ -385,6 +441,17 @@
         "config_updated": "Configuration mise à jour avec succès",
         "log_deleted": "Log supprimée avec succès",
         "logs_cleared": "Logs supprimées avec succès"
+      }
+    },
+    "projects": {
+      "errors": {
+        "not_found": "Projet non trouvé",
+        "unauthorized": "Vous n'êtes pas autorisé à gérer ce projet"
+      },
+      "messages": {
+        "created": "Projet créé avec succès",
+        "updated": "Projet mis à jour avec succès",
+        "deleted": "Projet supprimé avec succès"
       }
     }
   }

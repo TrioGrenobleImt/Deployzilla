@@ -1,16 +1,21 @@
 import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import { PipelineTimeline, PipelineStage } from "./components/PipelineTimeline";
 import { PipelineLogs, LogEntry } from "./components/PipelineLogs";
 import { DeploymentControls } from "./components/DeploymentControls";
 import { DeploymentHistory, DeploymentRecord } from "./components/DeploymentHistory";
-import { Zap, Activity, Shield, Terminal } from "lucide-react";
+import { Zap, Activity, Shield, Terminal, FolderPlus, UserCog } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useAuthContext } from "@/contexts/authContext";
+import { useProjectContext } from "@/contexts/projectContext";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export const Home = () => {
   const { t } = useTranslation();
   const { authUser } = useAuthContext();
+  const { selectedProject, projects, loading } = useProjectContext();
+  const navigate = useNavigate();
   const [isDeploying, setIsDeploying] = useState(false);
 
   // Mock Data
@@ -67,7 +72,7 @@ export const Home = () => {
       status: "failed",
       duration: "2m 10s",
       deployedBy: "GitHub Actions",
-      timestamp: "2026-01-04 18:30",
+      timestamp: "2024-01-04 18:30",
     },
   ];
 
@@ -77,15 +82,53 @@ export const Home = () => {
     setTimeout(() => setIsDeploying(false), 5000);
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Activity className="w-8 h-8 text-accent animate-spin" />
+      </div>
+    );
+  }
+
+  if (projects.length === 0) {
+    const isAdmin = authUser?.role === "admin";
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[80vh] p-6 text-center animate-in fade-in zoom-in duration-500">
+        <div className="relative mb-8">
+          <div className="absolute -inset-4 bg-accent/20 blur-3xl rounded-full" />
+          {isAdmin ? <FolderPlus className="w-24 h-24 text-accent relative" /> : <UserCog className="w-24 h-24 text-accent relative" />}
+        </div>
+
+        <h1 className="text-4xl font-black uppercase tracking-tighter text-foreground mb-4">
+          {isAdmin ? t("pages.home.empty_state.admin.title") : t("pages.home.empty_state.user.title")}
+        </h1>
+
+        <p className="max-w-md text-muted-foreground text-lg mb-10 leading-relaxed font-medium">
+          {isAdmin ? t("pages.home.empty_state.admin.description") : t("pages.home.empty_state.user.description")}
+        </p>
+
+        {isAdmin && (
+          <Button
+            size="lg"
+            onClick={() => navigate("/admin/projects")}
+            className="h-12 px-8 bg-accent text-accent-foreground font-black uppercase tracking-widest hover:scale-105 transition-transform"
+          >
+            {t("pages.home.empty_state.admin.button")}
+          </Button>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col gap-6 p-6 lg:p-10 bg-zinc-950/20">
+    <div className="flex flex-col gap-6 p-6 lg:p-10 bg-zinc-950/20 animate-in fade-in duration-500">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground flex items-center gap-3">
             <Zap className="w-8 h-8 text-accent fill-accent" />
-            {t("pages.home.title")}
+            {selectedProject?.name || t("pages.home.title")}
           </h1>
-          <p className="text-muted-foreground text-sm font-medium mt-1">{t("pages.home.description")}</p>
+          <p className="text-muted-foreground text-sm font-medium mt-2">{t("pages.home.description")}</p>
         </div>
         <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-muted-foreground border-l border-zinc-800 pl-4 h-10">
           <span>
@@ -93,7 +136,7 @@ export const Home = () => {
           </span>
           <span className="text-zinc-800">|</span>
           <span>
-            {t("pages.home.branch")}: <span className="text-accent underline">main</span>
+            {t("pages.home.branch")}: <span className="text-accent underline">{selectedProject?.branch || "main"}</span>
           </span>
         </div>
       </header>
@@ -131,7 +174,7 @@ export const Home = () => {
           </section>
 
           <section>
-            <Card className="bg-background/50 border-border/50">
+            <Card className="bg-background/50 border-border/50 shadow-2xl shadow-accent/5">
               <CardHeader>
                 <CardTitle className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <Activity className="w-4 h-4" />
@@ -147,7 +190,7 @@ export const Home = () => {
                   <span className="text-sm text-muted-foreground">{t("pages.home.system_health.resp_time")}</span>
                   <span className="text-sm font-mono text-accent">142ms</span>
                 </div>
-                <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden">
+                <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden mt-2">
                   <div className="bg-accent h-full w-[85%] animate-pulse" />
                 </div>
               </CardContent>

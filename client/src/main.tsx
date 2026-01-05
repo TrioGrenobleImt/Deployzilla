@@ -7,6 +7,7 @@ import { AuthContextProvider } from "./contexts/authContext.js";
 import { ThemeProvider } from "./providers/theme-provider.js";
 import { SocketContextProvider } from "./contexts/socketContext.js";
 import { ConfigProvider } from "./contexts/configContext.js";
+import { ProjectProvider } from "./contexts/projectContext.js";
 import { AppInitializer } from "./initializer.js";
 import "./lib/i18n.js";
 
@@ -23,14 +24,16 @@ if (!rootElement) {
       <ConfigProvider>
         <AppInitializer>
           <AuthContextProvider>
-            <SocketContextProvider>
-              <BrowserRouter>
-                <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-                  <App />
-                  <Toaster />
-                </ThemeProvider>
-              </BrowserRouter>
-            </SocketContextProvider>
+            <ProjectProvider>
+              <SocketContextProvider>
+                <BrowserRouter>
+                  <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+                    <App />
+                    <Toaster />
+                  </ThemeProvider>
+                </BrowserRouter>
+              </SocketContextProvider>
+            </ProjectProvider>
           </AuthContextProvider>
         </AppInitializer>
       </ConfigProvider>

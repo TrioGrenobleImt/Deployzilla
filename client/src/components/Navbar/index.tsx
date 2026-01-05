@@ -20,6 +20,7 @@ import {
 import { useLogout } from "@/hooks/useLogout";
 import { AvatarWithStatusCell } from "@/components/customs/avatarStatusCell";
 import { useConfigContext } from "../../contexts/configContext";
+import { useProjectContext } from "../../contexts/projectContext";
 import { Badge } from "../ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -34,6 +35,7 @@ export const Navbar = () => {
   const { logout, loading } = useLogout();
   const { authUser } = useAuthContext();
   const { getConfigValue } = useConfigContext();
+  const { projects, selectedProject, setSelectedProject } = useProjectContext();
 
   useEffect(() => {
     const fetchConfigValues = async () => {
@@ -181,22 +183,18 @@ export const Navbar = () => {
             </div>
             <Separator orientation="vertical" className="h-8" />
             <div className="flex items-center justify-between gap-4">
-              {authUser && (
-                <Select defaultValue="production">
-                  <SelectTrigger className="w-[160px] h-9 bg-zinc-950/50 border-zinc-800 text-xs font-bold uppercase tracking-wider">
-                    <Globe className="w-3.5 h-3.5 mr-2 text-accent" />
-                    <SelectValue placeholder="Environment" />
+              {authUser && projects.length > 0 && (
+                <Select value={selectedProject?._id} onValueChange={(id) => setSelectedProject(projects.find((p) => p._id === id) || null)}>
+                  <SelectTrigger className="w-[180px] h-9 bg-zinc-950/50 border-zinc-800 text-xs font-bold uppercase tracking-wider text-accent">
+                    <Zap className="w-3.5 h-3.5 mr-2" />
+                    <SelectValue placeholder="Project" />
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-950 border-zinc-800">
-                    <SelectItem value="dev" className="text-xs uppercase tracking-widest">
-                      {t("navbar.environments.dev")}
-                    </SelectItem>
-                    <SelectItem value="staging" className="text-xs uppercase tracking-widest">
-                      {t("navbar.environments.staging")}
-                    </SelectItem>
-                    <SelectItem value="production" className="text-xs uppercase tracking-widest">
-                      {t("navbar.environments.production")}
-                    </SelectItem>
+                    {projects.map((project) => (
+                      <SelectItem key={project._id} value={project._id} className="text-xs uppercase tracking-widest">
+                        {project.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}

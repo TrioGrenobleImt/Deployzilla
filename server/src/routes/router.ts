@@ -5,6 +5,8 @@ import { authRouter } from "./authenticationRoutes.js";
 import { configRouter } from "./configRoutes.js";
 import { logRouter } from "./logsRoutes.js";
 import { uploadRouter } from "./uploadRoutes.js";
+import { githubRouter } from "./githubActionsRoutes.js";
+import { projectRouter } from "./projectRoutes.js";
 
 import path from "path";
 import { fileURLToPath } from "url";
@@ -18,6 +20,8 @@ router.use("/api/users", userRouter); // User-related routes
 router.use("/api/auth", authRouter); // Authentication routes
 router.use("/api/logs", logRouter); // Logging routes
 router.use("/api/config", configRouter); // Config routes
+router.use("/api/webhooks", githubRouter); // GitHub routes
+router.use("/api/projects", projectRouter); // Project routes
 
 // // UPLOADS routes
 router.use("/api/uploads", uploadRouter); // File upload routes

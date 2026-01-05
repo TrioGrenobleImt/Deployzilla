@@ -8,6 +8,7 @@ import { Index } from "@/pages/Admin";
 import { Logs } from "@/pages/Admin/components/logs";
 import { Users } from "@/pages/Admin/components/users";
 import { Dashboard } from "@/pages/Admin/components/dashboard";
+import { Projects } from "@/pages/Admin/components/projects";
 import { Login } from "@/pages/Authentication/login";
 import { Register } from "@/pages/Authentication/register";
 import { Config } from "@/pages/Admin/components/config";
@@ -54,6 +55,7 @@ export const Router = () => {
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<Users />} />
+          <Route path="projects" element={<Projects />} />
           <Route path="logs" element={<Logs />} />
           <Route path="settings" element={<Config />} />
         </Route>

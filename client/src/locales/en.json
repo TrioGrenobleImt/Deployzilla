@@ -23,11 +23,24 @@
       "active_commit": "Active Commit",
       "branch": "Branch",
       "active_pipeline": "Active Pipeline",
+      "project_select_placeholder": "Select a project",
+      "no_projects": "No projects found. Create one in Admin > Projects.",
       "deployment_controls": "Deployment Controls",
       "system_health": {
         "title": "System Health",
         "uptime": "Uptime",
         "resp_time": "Avg. Response Time"
+      },
+      "empty_state": {
+        "admin": {
+          "title": "No projects configured",
+          "description": "It looks like you haven't added any projects yet. Projects are the foundation of your CI/CD pipelines.",
+          "button": "Manage Projects"
+        },
+        "user": {
+          "title": "No projects found",
+          "description": "You don't have access to any projects yet. Please contact your administrator to be assigned to a project."
+        }
       },
       "pipeline": {
         "stages": {
@@ -168,6 +181,7 @@
       "home": "Home",
       "dashboard": "Dashboard",
       "users": "Users",
+      "projects": "Projects",
       "settings": "Settings",
       "admin": "Admin",
       "logs": "Logs",
@@ -260,6 +274,42 @@
           "delete": "Delete",
           "confirm_text_invalid": "Confirmation text is incorrect"
         }
+      },
+      "projects_page": {
+        "title": "Project Management",
+        "description": "Manage your deployment projects, repositories, and automation settings.",
+        "project": "Project",
+        "a_project": "a project",
+        "actions": "Actions",
+        "copy_id": "Copy Project ID",
+        "copy_id_success": "Project ID copied to clipboard",
+        "copy_webhook_success": "Webhook URL copied to clipboard",
+        "delete_project": "Delete this Project",
+        "update_project": "Update this Project",
+        "webhook_url": "Webhook URL",
+        "actions_type": {
+          "create": "Create",
+          "update": "Update",
+          "delete": "Delete"
+        },
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive"
+        },
+        "delete_description": "Are you sure you want to delete the project <strong>{{name}}</strong>? This action cannot be undone.",
+        "form": {
+          "name": "Project Name",
+          "repositoryUrl": "Repository URL",
+          "repositoryUrlEdit": "Repository URL (add .git)",
+          "branch": "Branch",
+          "autoDeploy": "Auto-deploy on webhook",
+          "defaultServerConfig": "Default Server Configuration (JSON)",
+          "save": "Save",
+          "update": "Update",
+          "delete": "Delete",
+          "confirm_delete_label": "Type \"DELETE\" to confirm",
+          "confirm_delete_placeholder": "DELETE"
+        }
       }
     }
   },
@@ -286,13 +336,19 @@
         "username": "Username",
         "email": "Email",
         "role": "Role",
-        "auth_type": "Authentication Type"
+        "auth_type": "Authentication Type",
+        "name": "Name",
+        "repoUrl": "Repository URL",
+        "branch": "Branch",
+        "autoDeploy": "Auto-deploy",
+        "webhookUrl": "Webhook URL"
       },
       "create_entity": "Create a new entity",
       "delete_entity": "Delete all entities",
       "filters": {
         "username": "Filter by username",
-        "message": "Filter by message"
+        "message": "Filter by message",
+        "name": "Filter by name"
       },
       "delete_title": "Delete all entities",
       "delete_description": "Are you sure you want to delete all entities? This action cannot be undone.",
@@ -385,6 +441,17 @@
         "config_updated": "Configuration updated successfully",
         "log_deleted": "Log deleted successfully",
         "logs_cleared": "All logs cleared successfully"
+      }
+    },
+    "projects": {
+      "errors": {
+        "not_found": "Project not found",
+        "unauthorized": "You are not authorized to manage this project"
+      },
+      "messages": {
+        "created": "Project created successfully",
+        "updated": "Project updated successfully",
+        "deleted": "Project deleted successfully"
       }
     }
   }
