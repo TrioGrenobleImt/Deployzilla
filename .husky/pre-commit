@@ -1,9 +1,0 @@
-# Format server code
-cd server
-pnpm format
-cd ..
-
-# Format client code
-cd client
-pnpm format
-cd ..
