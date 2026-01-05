@@ -47,7 +47,11 @@ const statusConfig = {
   },
 };
 
+import { useTranslation } from "react-i18next";
+
 export const PipelineTimeline = ({ stages }: PipelineTimelineProps) => {
+  const { t } = useTranslation();
+
   return (
     <Card className="bg-background/50 border-border/50 backdrop-blur-sm">
       <CardContent className="p-6">
@@ -73,7 +77,9 @@ export const PipelineTimeline = ({ stages }: PipelineTimelineProps) => {
                 </div>
 
                 <div className="absolute top-14 flex flex-col items-center min-w-[80px]">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-foreground">{stage.name}</span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-foreground">
+                    {t(`pages.home.pipeline.stages.${stage.name.toLowerCase()}`)}
+                  </span>
                   {stage.duration && (
                     <span className="flex items-center gap-1 mt-1 text-[10px] text-muted-foreground">
                       <Clock className="w-3 h-3" />

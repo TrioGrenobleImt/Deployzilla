@@ -8,11 +8,65 @@
     "languageChanged": "Language changed to English.",
     "changingLanguage": "Changing language...",
     "logout": "Logout",
-    "profile": "Profile"
+    "profile": "Profile",
+    "environments": {
+      "dev": "Development",
+      "staging": "Staging",
+      "production": "Production"
+    }
   },
   "pages": {
     "home": {
-      "welcome_message": "Welcome to this boilerplate!"
+      "welcome_message": "Welcome to this boilerplate!",
+      "title": "Dashboard",
+      "description": "Real-time CI/CD pipeline and deployment status",
+      "active_commit": "Active Commit",
+      "branch": "Branch",
+      "active_pipeline": "Active Pipeline",
+      "deployment_controls": "Deployment Controls",
+      "system_health": {
+        "title": "System Health",
+        "uptime": "Uptime",
+        "resp_time": "Avg. Response Time"
+      },
+      "pipeline": {
+        "stages": {
+          "source": "Source",
+          "build": "Build",
+          "tests": "Tests",
+          "docker": "Docker",
+          "deploy": "Deploy"
+        },
+        "logs": {
+          "title": "Pipeline Logs",
+          "filter_placeholder": "Filter logs...",
+          "no_logs": "No logs matching your filter"
+        }
+      },
+      "controls": {
+        "run_pipeline": "Run Pipeline",
+        "deploying": "Deploying...",
+        "redeploy": "Redeploy",
+        "rollback": "Rollback",
+        "no_permission": "You don't have permission to deploy to this environment."
+      },
+      "history": {
+        "title": "Deployment History",
+        "columns": {
+          "commit": "Commit",
+          "trigger": "Trigger",
+          "environment": "Environment",
+          "status": "Status",
+          "duration": "Duration",
+          "by": "By",
+          "date": "Date"
+        },
+        "statuses": {
+          "success": "Success",
+          "failed": "Failed",
+          "rolled_back": "Rolled Back"
+        }
+      }
     },
     "account": {
       "errors": {
@@ -255,6 +309,14 @@
         "all": "All"
       }
     }
+  },
+  "footer": {
+    "system": "System",
+    "healthy": "Healthy",
+    "version": "Version",
+    "environment": "Environment",
+    "built_with": "Built with",
+    "for_teams": "for DevOps Teams"
   },
   "global": {
     "buttons": {

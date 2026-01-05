@@ -1,6 +1,8 @@
 import { Shield, Activity, GitCommit, Heart } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const Footer = () => {
+  const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -10,19 +12,19 @@ export const Footer = () => {
           <div className="flex items-center gap-2">
             <Activity className="w-3.5 h-3.5 text-green-500 animate-pulse" />
             <span>
-              System: <span className="text-zinc-300">Healthy</span>
+              {t("footer.system")}: <span className="text-zinc-300">{t("footer.healthy")}</span>
             </span>
           </div>
           <div className="flex items-center gap-2">
             <GitCommit className="w-3.5 h-3.5 text-accent" />
             <span>
-              Version: <span className="text-zinc-300">v1.2.4-stable</span>
+              {t("footer.version")}: <span className="text-zinc-300">v1.2.4-stable</span>
             </span>
           </div>
           <div className="flex items-center gap-2">
             <Shield className="w-3.5 h-3.5 text-blue-500" />
             <span>
-              Environment: <span className="text-zinc-300 uppercase">Production</span>
+              {t("footer.environment")}: <span className="text-zinc-300 uppercase">Production</span>
             </span>
           </div>
         </div>
@@ -31,8 +33,8 @@ export const Footer = () => {
           <span>&copy; {currentYear} DeployZilla</span>
           <span className="hidden md:inline">|</span>
           <div className="flex items-center gap-1.5 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all cursor-default group">
-            Built with <Heart className="w-2.5 h-2.5 text-red-500 fill-red-500 group-hover:scale-125 transition-transform" /> for DevOps
-            Teams
+            {t("footer.built_with")} <Heart className="w-2.5 h-2.5 text-red-500 fill-red-500 group-hover:scale-125 transition-transform" />{" "}
+            {t("footer.for_teams")}
           </div>
         </div>
       </div>

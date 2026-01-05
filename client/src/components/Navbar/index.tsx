@@ -189,13 +189,13 @@ export const Navbar = () => {
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-950 border-zinc-800">
                     <SelectItem value="dev" className="text-xs uppercase tracking-widest">
-                      Development
+                      {t("navbar.environments.dev")}
                     </SelectItem>
                     <SelectItem value="staging" className="text-xs uppercase tracking-widest">
-                      Staging
+                      {t("navbar.environments.staging")}
                     </SelectItem>
                     <SelectItem value="production" className="text-xs uppercase tracking-widest">
-                      Production
+                      {t("navbar.environments.production")}
                     </SelectItem>
                   </SelectContent>
                 </Select>

@@ -8,11 +8,65 @@
     "languageChanged": "Langage changé en français.",
     "changingLanguage": "Changement de langage...",
     "logout": "Se déconnecter",
-    "profile": "Profil"
+    "profile": "Profil",
+    "environments": {
+      "dev": "Développement",
+      "staging": "Staging",
+      "production": "Production"
+    }
   },
   "pages": {
     "home": {
-      "welcome_message": "Bienvenue sur ce boilerplate !"
+      "welcome_message": "Bienvenue sur ce boilerplate !",
+      "title": "Tableau de bord",
+      "description": "Statut de la pipeline CI/CD et des déploiements en temps réel",
+      "active_commit": "Commit Actif",
+      "branch": "Branche",
+      "active_pipeline": "Pipeline Active",
+      "deployment_controls": "Contrôles de déploiement",
+      "system_health": {
+        "title": "Santé du système",
+        "uptime": "Disponibilité",
+        "resp_time": "Temps de rép. moyen"
+      },
+      "pipeline": {
+        "stages": {
+          "source": "Source",
+          "build": "Build",
+          "tests": "Tests",
+          "docker": "Docker",
+          "deploy": "Déploiement"
+        },
+        "logs": {
+          "title": "Journaux de pipeline",
+          "filter_placeholder": "Filtrer les journaux...",
+          "no_logs": "Aucun journal correspondant à votre filtre"
+        }
+      },
+      "controls": {
+        "run_pipeline": "Lancer la pipeline",
+        "deploying": "Déploiement en cours...",
+        "redeploy": "Redéployer",
+        "rollback": "Rollback",
+        "no_permission": "Vous n'avez pas la permission de déployer sur cet environnement."
+      },
+      "history": {
+        "title": "Historique des déploiements",
+        "columns": {
+          "commit": "Commit",
+          "trigger": "Déclencheur",
+          "environment": "Environnement",
+          "status": "Statut",
+          "duration": "Durée",
+          "by": "Par",
+          "date": "Date"
+        },
+        "statuses": {
+          "success": "Succès",
+          "failed": "Échec",
+          "rolled_back": "Roulé en arrière"
+        }
+      }
     },
     "account": {
       "errors": {
@@ -255,6 +309,14 @@
         "all": "Tout"
       }
     }
+  },
+  "footer": {
+    "system": "Système",
+    "healthy": "Sain",
+    "version": "Version",
+    "environment": "Environnement",
+    "built_with": "Fait avec",
+    "for_teams": "pour les équipes DevOps"
   },
   "global": {
     "buttons": {

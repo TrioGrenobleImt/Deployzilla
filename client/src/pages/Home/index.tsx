@@ -83,17 +83,17 @@ export const Home = () => {
         <div>
           <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground flex items-center gap-3">
             <Zap className="w-8 h-8 text-accent fill-accent" />
-            Dashboard
+            {t("pages.home.title")}
           </h1>
-          <p className="text-muted-foreground text-sm font-medium mt-1">Real-time CI/CD pipeline and deployment status</p>
+          <p className="text-muted-foreground text-sm font-medium mt-1">{t("pages.home.description")}</p>
         </div>
         <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-muted-foreground border-l border-zinc-800 pl-4 h-10">
           <span>
-            Active Commit: <span className="text-accent underline">7f3a21b</span>
+            {t("pages.home.active_commit")}: <span className="text-accent underline">7f3a21b</span>
           </span>
           <span className="text-zinc-800">|</span>
           <span>
-            Branch: <span className="text-accent underline">main</span>
+            {t("pages.home.branch")}: <span className="text-accent underline">main</span>
           </span>
         </div>
       </header>
@@ -104,7 +104,7 @@ export const Home = () => {
           <section>
             <div className="flex items-center gap-2 mb-4">
               <Activity className="w-5 h-5 text-accent" />
-              <h2 className="text-sm font-bold uppercase tracking-widest">Active Pipeline</h2>
+              <h2 className="text-sm font-bold uppercase tracking-widest">{t("pages.home.active_pipeline")}</h2>
             </div>
             <PipelineTimeline stages={stages} />
           </section>
@@ -119,7 +119,7 @@ export const Home = () => {
           <section>
             <div className="flex items-center gap-2 mb-4">
               <Zap className="w-5 h-5 text-accent" />
-              <h2 className="text-sm font-bold uppercase tracking-widest">Deployment Controls</h2>
+              <h2 className="text-sm font-bold uppercase tracking-widest">{t("pages.home.deployment_controls")}</h2>
             </div>
             <DeploymentControls
               onDeploy={handleDeploy}
@@ -135,16 +135,16 @@ export const Home = () => {
               <CardHeader>
                 <CardTitle className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <Activity className="w-4 h-4" />
-                  System Health
+                  {t("pages.home.system_health.title")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Uptime</span>
+                  <span className="text-sm text-muted-foreground">{t("pages.home.system_health.uptime")}</span>
                   <span className="text-sm font-mono text-green-500">99.98%</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Avg. Response Time</span>
+                  <span className="text-sm text-muted-foreground">{t("pages.home.system_health.resp_time")}</span>
                   <span className="text-sm font-mono text-accent">142ms</span>
                 </div>
                 <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden">

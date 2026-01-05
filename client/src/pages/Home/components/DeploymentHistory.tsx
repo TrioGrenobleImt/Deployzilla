@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ExternalLink, GitBranch, User, History as LuHistory, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 export interface DeploymentRecord {
   id: string;
@@ -26,25 +27,27 @@ const statusBadge = {
 };
 
 export const DeploymentHistory = ({ history }: DeploymentHistoryProps) => {
+  const { t } = useTranslation();
+
   return (
     <Card className="bg-background/50 border-border/50">
       <CardHeader>
         <CardTitle className="text-lg font-bold flex items-center gap-2">
           <LuHistory className="w-5 h-5" />
-          Deployment History
+          {t("pages.home.history.title")}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent border-border/50">
-              <TableHead className="w-[100px]">Commit</TableHead>
-              <TableHead>Trigger</TableHead>
-              <TableHead>Environment</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Duration</TableHead>
-              <TableHead>By</TableHead>
-              <TableHead className="text-right">Date</TableHead>
+              <TableHead className="w-[100px]">{t("pages.home.history.columns.commit")}</TableHead>
+              <TableHead>{t("pages.home.history.columns.trigger")}</TableHead>
+              <TableHead>{t("pages.home.history.columns.environment")}</TableHead>
+              <TableHead>{t("pages.home.history.columns.status")}</TableHead>
+              <TableHead>{t("pages.home.history.columns.duration")}</TableHead>
+              <TableHead>{t("pages.home.history.columns.by")}</TableHead>
+              <TableHead className="text-right">{t("pages.home.history.columns.date")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -59,11 +62,13 @@ export const DeploymentHistory = ({ history }: DeploymentHistoryProps) => {
                 <TableCell className="capitalize text-xs text-muted-foreground">{record.trigger}</TableCell>
                 <TableCell>
                   <Badge variant="outline" className="text-[10px] h-5 uppercase tracking-tighter">
-                    {record.environment}
+                    {t(`navbar.environments.${record.environment}`)}
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge className={cn("text-[10px] h-5 capitalize", statusBadge[record.status])}>{record.status.replace("_", " ")}</Badge>
+                  <Badge className={cn("text-[10px] h-5 capitalize", statusBadge[record.status])}>
+                    {t(`pages.home.history.statuses.${record.status}`)}
+                  </Badge>
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
