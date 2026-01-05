@@ -59,6 +59,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={adminMenus.navMain} />
       </SidebarContent>
       <SidebarFooter>
+        <ThemeChanger />
         <LanguageChanger />
         <NavUser user={authUser} />
       </SidebarFooter>

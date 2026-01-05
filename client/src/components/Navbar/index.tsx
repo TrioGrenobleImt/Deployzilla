@@ -1,5 +1,6 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { LanguageChanger } from "./languageChanger";
+import { ThemeChanger } from "./themeChanger";
 import { useTranslation } from "react-i18next";
 import { Separator } from "../ui/separator";
 import { Home, House, LogOut, Menu, User, Wrench, X, Globe, Shield, Terminal, Zap } from "lucide-react";
@@ -110,7 +111,7 @@ export const Navbar = () => {
             <Link to="/">{configValues["APP_NAME"]}</Link>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               {authUser ? (
                 <>
                   {navLinks
@@ -132,7 +133,7 @@ export const Navbar = () => {
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild className="hover:cursor-pointer">
-                      <div className="flex items-center gap-3 pl-2 pr-1 h-9 rounded-full bg-zinc-950/50 border border-zinc-800 hover:bg-zinc-900 transition-colors">
+                      <div className="flex items-center gap-3 pl-2 pr-1 h-9 rounded-full bg-muted/50 border border-border/50 hover:bg-muted transition-colors transition-all">
                         <Badge
                           variant="outline"
                           className="text-[10px] h-5 px-1.5 border-accent text-accent font-bold uppercase tracking-tighter"
@@ -185,11 +186,15 @@ export const Navbar = () => {
             <div className="flex items-center justify-between gap-4">
               {authUser && projects.length > 0 && (
                 <Select value={selectedProject?._id} onValueChange={(id) => setSelectedProject(projects.find((p) => p._id === id) || null)}>
-                  <SelectTrigger className="w-[180px] h-9 bg-zinc-950/50 border-zinc-800 text-xs font-bold uppercase tracking-wider text-accent">
-                    <Zap className="w-3.5 h-3.5 mr-2" />
-                    <SelectValue placeholder="Project" />
+                  <SelectTrigger className="w-[220px] h-9 bg-muted/50 border-border/50 text-xs font-black uppercase tracking-widest text-accent transition-all px-4 group">
+                    <div className="flex items-center gap-2 overflow-hidden w-full">
+                      <Zap className="w-3.5 h-3.5 shrink-0 fill-accent group-hover:animate-pulse" />
+                      <div className="truncate flex-1 text-left font-mono">
+                        <SelectValue placeholder={t("pages.home.project_select_placeholder")} />
+                      </div>
+                    </div>
                   </SelectTrigger>
-                  <SelectContent className="bg-zinc-950 border-zinc-800">
+                  <SelectContent className="bg-background border-border/50">
                     {projects.map((project) => (
                       <SelectItem key={project._id} value={project._id} className="text-xs uppercase tracking-widest">
                         {project.name}
@@ -198,6 +203,7 @@ export const Navbar = () => {
                   </SelectContent>
                 </Select>
               )}
+              <ThemeChanger />
               <LanguageChanger />
             </div>
           </div>
@@ -247,6 +253,7 @@ export const Navbar = () => {
             <Separator />
             <div className="flex items-center justify-center gap-4">
               <LanguageChanger />
+              <ThemeChanger />
             </div>
           </div>
         </div>

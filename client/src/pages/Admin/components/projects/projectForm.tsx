@@ -138,7 +138,7 @@ export const ProjectForm = ({ dialog, refresh, action, project }: ProjectFormPro
             control={form.control}
             name="autoDeploy"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 border-zinc-800">
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 border-border/50 transition-all">
                 <FormControl>
                   <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                 </FormControl>

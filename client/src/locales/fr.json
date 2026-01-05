@@ -300,6 +300,7 @@
         "delete_description": "Êtes-vous sûr de vouloir supprimer le projet <strong>{{name}}</strong> ? Cette action est irréversible.",
         "form": {
           "name": "Nom du projet",
+          "name_placeholder": "Mon super projet",
           "repositoryUrl": "URL du dépôt",
           "repositoryUrlEdit": "URL du dépôt (ajouter .git)",
           "branch": "Branche",
