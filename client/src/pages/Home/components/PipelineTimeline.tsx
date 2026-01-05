@@ -53,45 +53,45 @@ export const PipelineTimeline = ({ stages }: PipelineTimelineProps) => {
   const { t } = useTranslation();
 
   return (
-    <Card className="bg-background/50 border-border/50 backdrop-blur-sm">
-      <CardContent className="p-6">
-        <div className="relative flex items-center justify-between w-full">
-          {/* Progress Line Background */}
-          <div className="absolute top-1/2 left-0 w-full h-0.5 bg-border -translate-y-1/2 z-0" />
+    <div className="w-full py-4">
+      <div className="relative flex justify-between items-start w-full">
+        {/* Progress Line Background - Positioned relative to icons */}
+        <div className="absolute top-6 left-0 w-full h-0.5 bg-border z-0" />
 
-          {stages.map((stage, index) => {
-            const Config = statusConfig[stage.status];
-            const Icon = Config.icon;
+        {stages.map((stage, index) => {
+          const Config = statusConfig[stage.status];
+          const Icon = Config.icon;
 
-            return (
-              <div key={stage.id} className="relative z-10 flex flex-col items-center group">
-                <div
-                  className={cn(
-                    "flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all duration-300",
-                    Config.bg,
-                    Config.border,
-                    stage.status === "running" && "ring-4 ring-blue-500/20",
-                  )}
-                >
-                  <Icon className={cn("w-6 h-6", Config.color, Config.animate)} />
-                </div>
-
-                <div className="absolute top-14 flex flex-col items-center min-w-[80px]">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-foreground">
-                    {t(`pages.home.pipeline.stages.${stage.name.toLowerCase()}`)}
-                  </span>
-                  {stage.duration && (
-                    <span className="flex items-center gap-1 mt-1 text-[10px] text-muted-foreground">
-                      <Clock className="w-3 h-3" />
-                      {stage.duration}
-                    </span>
-                  )}
-                </div>
+          return (
+            <div key={stage.id} className="relative z-10 flex flex-col items-center px-2 flex-1">
+              {/* Icon Container */}
+              <div
+                className={cn(
+                  "flex items-center justify-center w-12 h-12 rounded-full border-2 bg-background transition-all duration-300 shadow-sm",
+                  Config.bg,
+                  Config.border,
+                  stage.status === "running" && "ring-4 ring-blue-500/20",
+                )}
+              >
+                <Icon className={cn("w-6 h-6", Config.color, Config.animate)} />
               </div>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
+
+              {/* Label & Details */}
+              <div className="mt-4 flex flex-col items-center text-center max-w-[120px]">
+                <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-foreground line-clamp-1">
+                  {t(`pages.home.pipeline.stages.${stage.name.toLowerCase()}`)}
+                </span>
+                {stage.duration && (
+                  <span className="flex items-center gap-1 mt-1.5 text-[9px] md:text-[10px] text-muted-foreground font-mono bg-muted/50 px-2 py-0.5 rounded-full border border-border/50">
+                    <Clock className="w-2.5 h-2.5" />
+                    {stage.duration}
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 };

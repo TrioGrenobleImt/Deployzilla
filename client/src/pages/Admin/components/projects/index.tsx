@@ -78,7 +78,7 @@ export const Projects = () => {
 
       {openDialog && (
         <Dialog open={openDialog} onOpenChange={() => setOpenDialog(false)}>
-          <DialogContent className="sm:max-w-[625px] bg-zinc-950 border-zinc-800 text-foreground">
+          <DialogContent className="sm:max-w-[625px]">
             <DialogHeader>
               <DialogTitle>
                 {t(`pages.admin.projects_page.actions_type.` + action)} {t("pages.admin.projects_page.a_project")}

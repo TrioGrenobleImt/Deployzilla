@@ -299,6 +299,7 @@
         "delete_description": "Are you sure you want to delete the project <strong>{{name}}</strong>? This action cannot be undone.",
         "form": {
           "name": "Project Name",
+          "name_placeholder": "My Awesome Project",
           "repositoryUrl": "Repository URL",
           "repositoryUrlEdit": "Repository URL (add .git)",
           "branch": "Branch",
