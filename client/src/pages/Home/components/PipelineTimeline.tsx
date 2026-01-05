@@ -1,0 +1,91 @@
+import { Card, CardContent } from "@/components/ui/card";
+import { CheckCircle2, Circle, Clock, Loader2, PlayCircle, RotateCcw } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export type StageStatus = "pending" | "running" | "success" | "failed";
+
+export interface PipelineStage {
+  id: string;
+  name: string;
+  status: StageStatus;
+  duration?: string;
+  icon: any;
+}
+
+interface PipelineTimelineProps {
+  stages: PipelineStage[];
+}
+
+const statusConfig = {
+  pending: {
+    icon: Circle,
+    color: "text-muted-foreground",
+    bg: "bg-muted/50",
+    border: "border-muted",
+    animate: "",
+  },
+  running: {
+    icon: Loader2,
+    color: "text-blue-500",
+    bg: "bg-blue-500/10",
+    border: "border-blue-500/50",
+    animate: "animate-spin",
+  },
+  success: {
+    icon: CheckCircle2,
+    color: "text-green-500",
+    bg: "bg-green-500/10",
+    border: "border-green-500/50",
+    animate: "",
+  },
+  failed: {
+    icon: RotateCcw,
+    color: "text-destructive",
+    bg: "bg-destructive/10",
+    border: "border-destructive/50",
+    animate: "",
+  },
+};
+
+export const PipelineTimeline = ({ stages }: PipelineTimelineProps) => {
+  return (
+    <Card className="bg-background/50 border-border/50 backdrop-blur-sm">
+      <CardContent className="p-6">
+        <div className="relative flex items-center justify-between w-full">
+          {/* Progress Line Background */}
+          <div className="absolute top-1/2 left-0 w-full h-0.5 bg-border -translate-y-1/2 z-0" />
+
+          {stages.map((stage, index) => {
+            const Config = statusConfig[stage.status];
+            const Icon = Config.icon;
+
+            return (
+              <div key={stage.id} className="relative z-10 flex flex-col items-center group">
+                <div
+                  className={cn(
+                    "flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all duration-300",
+                    Config.bg,
+                    Config.border,
+                    stage.status === "running" && "ring-4 ring-blue-500/20",
+                  )}
+                >
+                  <Icon className={cn("w-6 h-6", Config.color, Config.animate)} />
+                </div>
+
+                <div className="absolute top-14 flex flex-col items-center min-w-[80px]">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-foreground">{stage.name}</span>
+                  {stage.duration && (
+                    <span className="flex items-center gap-1 mt-1 text-[10px] text-muted-foreground">
+                      <Clock className="w-3 h-3" />
+                      {stage.duration}
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};

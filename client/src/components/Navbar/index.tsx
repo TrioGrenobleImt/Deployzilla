@@ -1,9 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
-import { ThemeChanger } from "./themeChanger";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { LanguageChanger } from "./languageChanger";
 import { useTranslation } from "react-i18next";
 import { Separator } from "../ui/separator";
-import { Home, House, LogOut, Menu, User, Wrench, X } from "lucide-react";
+import { Home, House, LogOut, Menu, User, Wrench, X, Globe, Shield, Terminal, Zap } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
@@ -21,11 +20,14 @@ import {
 import { useLogout } from "@/hooks/useLogout";
 import { AvatarWithStatusCell } from "@/components/customs/avatarStatusCell";
 import { useConfigContext } from "../../contexts/configContext";
+import { Badge } from "../ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [configValues, setConfigValues] = useState<Record<string, string>>({});
   const menuRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
 
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -112,16 +114,31 @@ export const Navbar = () => {
                   {navLinks
                     .filter((link) => link.auth)
                     .map((link) => (
-                      <Button key={link.path} onClick={() => navigate(link.path)} variant="link">
+                      <Button
+                        key={link.path}
+                        onClick={() => navigate(link.path)}
+                        variant="ghost"
+                        className={cn(
+                          "h-9 px-4 text-xs font-bold uppercase tracking-widest transition-all",
+                          location.pathname === link.path ? "bg-accent/10 text-accent" : "text-muted-foreground hover:text-foreground",
+                        )}
+                      >
+                        <link.icon className="w-3.5 h-3.5 mr-2" />
                         {link.label}
                       </Button>
                     ))}
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild className="hover:cursor-pointer">
-                      <span>
+                      <div className="flex items-center gap-3 pl-2 pr-1 h-9 rounded-full bg-zinc-950/50 border border-zinc-800 hover:bg-zinc-900 transition-colors">
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] h-5 px-1.5 border-accent text-accent font-bold uppercase tracking-tighter"
+                        >
+                          {authUser.role}
+                        </Badge>
                         <AvatarWithStatusCell user={authUser} />
-                      </span>
+                      </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-40">
                       <DropdownMenuLabel>
@@ -164,8 +181,26 @@ export const Navbar = () => {
             </div>
             <Separator orientation="vertical" className="h-8" />
             <div className="flex items-center justify-between gap-4">
+              {authUser && (
+                <Select defaultValue="production">
+                  <SelectTrigger className="w-[160px] h-9 bg-zinc-950/50 border-zinc-800 text-xs font-bold uppercase tracking-wider">
+                    <Globe className="w-3.5 h-3.5 mr-2 text-accent" />
+                    <SelectValue placeholder="Environment" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-950 border-zinc-800">
+                    <SelectItem value="dev" className="text-xs uppercase tracking-widest">
+                      Development
+                    </SelectItem>
+                    <SelectItem value="staging" className="text-xs uppercase tracking-widest">
+                      Staging
+                    </SelectItem>
+                    <SelectItem value="production" className="text-xs uppercase tracking-widest">
+                      Production
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
               <LanguageChanger />
-              <ThemeChanger />
             </div>
           </div>
         </div>
@@ -214,7 +249,6 @@ export const Navbar = () => {
             <Separator />
             <div className="flex items-center justify-center gap-4">
               <LanguageChanger />
-              <ThemeChanger />
             </div>
           </div>
         </div>

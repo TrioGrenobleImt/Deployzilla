@@ -25,7 +25,7 @@ if (!rootElement) {
           <AuthContextProvider>
             <SocketContextProvider>
               <BrowserRouter>
-                <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+                <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
                   <App />
                   <Toaster />
                 </ThemeProvider>
