@@ -14,6 +14,7 @@ import { Login } from "@/pages/Authentication/login";
 import { Register } from "@/pages/Authentication/register";
 import { Config } from "@/pages/Admin/components/config";
 import { RegisterGoogleForm } from "@/pages/Authentication/registerGoogleForm";
+import { About } from "@/pages/About";
 
 export const Router = () => {
   return (
@@ -84,6 +85,14 @@ export const Router = () => {
           element={
             <ProtectedRoute authRequired={true}>
               <Account />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <ProtectedRoute authRequired={true}>
+              <About />
             </ProtectedRoute>
           }
         />

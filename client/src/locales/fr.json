@@ -1,70 +1,52 @@
 {
   "navbar": {
     "home": "Accueil",
-    "dashboard": "Tableau de bord",
-    "account": "Mon compte",
-    "login": "Se connecter",
+    "account": "Compte",
+    "login": "Connexion",
     "language": "Langage",
     "languageChanged": "Langage changé en français.",
     "changingLanguage": "Changement de langage...",
-    "logout": "Se déconnecter",
+    "logout": "Déconnexion",
     "profile": "Profil",
+    "about": "À propos",
+    "dashboard": "Tableau de bord",
     "environments": {
       "dev": "Développement",
       "staging": "Staging",
-      "production": "Production"
+      "prod": "Production",
+      "demo": "Demo"
     }
   },
   "pages": {
+    "about": {
+        "title": "À propos",
+        "subtitle": "Rencontrez l'équipe derrière DeployZilla.",
+        "developers": {
+            "dev1": { "name": "Téo VILLET", "role": "Architecte Frontend", "desc": "Passionné par les pixels et l'expérience utilisateur.", "image": "/image/team/teo.png", "github": "https://github.com/teovlt", "skills": ["React", "TypeScript", "Tailwind CSS", "Figma"], "buymeacoffee": "https://buymeacoffee.com/", "stats": { "commits": "2.4k", "projects": "12", "experience": "5 ans" } },
+            "dev2": { "name": "Arnaud ENDIGNOUS", "role": "Ingénieur Backend", "desc": "Mise à l'échelle des systèmes et optimisation des bases de données.", "image": "/image/team/arnaud.jpg", "github": "https://github.com/Piryth", "skills": ["Node.js", "PostgreSQL", "Redis", "Docker"], "buymeacoffee": "https://buymeacoffee.com/", "stats": { "commits": "3.1k", "projects": "15", "experience": "6 ans" } },
+            "dev3": { "name": "Cédric CHAMPEIX", "role": "Spécialiste DevOps", "desc": "Automatise tout ce qui bouge.", "image": "/image/team/cedric.jpg", "github": "https://github.com/cedric-champeix", "skills": ["Kubernetes", "AWS", "CI/CD", "Terraform"], "buymeacoffee": "https://buymeacoffee.com/", "stats": { "commits": "1.8k", "projects": "20+", "experience": "4 ans" } },
+            "dev4": { "name": "Félix DELASSUS", "role": "Stagiaire", "desc": "Apprend et aide.", "image": "/image/team/felix.jpg", "github": "https://github.com/delassusfelix", "skills": ["JS", "Python", "Apprentissage Rapide", "Préparation de Café"], "buymeacoffee": "https://buymeacoffee.com/", "stats": { "commits": "150", "projects": "3", "experience": "1 an" } }
+        },
+        "stats_labels": {
+          "commits": "Commits",
+          "projects": "Projets",
+          "experience": "Exp."
+        }
+    },
     "home": {
-      "welcome_message": "Bienvenue sur ce boilerplate !",
-      "title": "Mes projets",
+      "title": "Mes Projets",
       "subtitle": "Sélectionnez un projet pour voir son tableau de bord et ses déploiements.",
-      "description": "Statut de la pipeline CI/CD et des déploiements en temps réel",
-      "active_commit": "Commit Actif",
-      "branch": "Branche",
-      "active_pipeline": "Pipeline Active",
-      "project_select_placeholder": "Sélectionner un projet",
       "no_projects_title": "Aucun projet trouvé",
-      "no_projects": "Vous n'avez pas accès à des projets. Veuillez contacter votre administrateur.",
-      "no_projects_admin": "Aucun projet trouvé. Créez-en un dans Admin > Projets.",
+      "no_projects": "Vous n'avez pas encore accès à des projets.",
+      "no_projects_admin": "Commencez par créer votre premier projet dans le panneau d'administration.",
+      "active_commit": "Commit actif",
+      "branch": "Branche",
+      "active_pipeline": "Pipeline actif",
       "deployment_controls": "Contrôles de déploiement",
       "system_health": {
         "title": "Santé du système",
         "uptime": "Disponibilité",
-        "resp_time": "Temps de rép. moyen"
-      },
-      "empty_state": {
-        "admin": {
-          "title": "Aucun projet configuré",
-          "description": "Il semble que vous n'ayez pas encore ajouté de projets. Les projets sont le fondement de vos pipelines CI/CD.",
-          "button": "Gérer les projets"
-        },
-        "user": {
-          "title": "Aucun projet trouvé",
-          "description": "Vous n'avez pas encore accès à des projets. Veuillez contacter votre administrateur pour être affecté à un projet."
-        }
-      },
-      "pipeline": {
-        "stages": {
-          "source": "Source",
-          "build": "Build",
-          "tests": "Tests",
-          "docker": "Docker",
-          "deploy": "Déploiement"
-        },
-        "logs": {
-          "title": "Journaux de pipeline",
-          "filter_placeholder": "Filtrer les journaux...",
-          "no_logs": "Aucun journal correspondant à votre filtre"
-        }
-      },
-      "controls": {
-        "run_pipeline": "Lancer la pipeline",
-        "deploying": "Déploiement en cours...",
-        "redeploy": "Redéployer",
-        "rollback": "Rollback",
-        "no_permission": "Vous n'avez pas la permission de déployer sur cet environnement."
+        "resp_time": "Tps. Réponse"
       },
       "history": {
         "title": "Historique des déploiements",
@@ -87,7 +69,8 @@
       "auto_deploy": "Déploiement auto",
       "updated_recently": "Mis à jour récemment",
       "view_dashboard": "Voir le tableau de bord",
-      "create_project": "Créer un projet"
+      "create_project": "Créer un projet",
+      "project_select_placeholder": "Choisir un projet..."
     },
     "project": {
       "not_found": "Projet introuvable",
@@ -99,380 +82,96 @@
         "github": "GitHub"
       }
     },
-    "account": {
-      "errors": {
-        "check_approval": "Veuillez cocher la case pour confirmer la suppression de votre compte.",
-        "password_min": "Le mot de passe doit comporter au moins 6 caractères.",
-        "name_min": "Le nom doit comporter au moins 2 caractères.",
-        "name_max": "Le nom doit comporter au maximum 25 caractères.",
-        "forename_min": "Le prénom doit comporter au moins 2 caractères.",
-        "forename_max": "Le prénom doit comporter au maximum 25 caractères.",
-        "username_min": "Le nom d'utilisateur doit comporter au moins 2 caractères.",
-        "username_max": "Le nom d'utilisateur doit comporter au maximum 25 caractères.",
-        "invalid_email": "Adresse e-mail invalide.",
-        "current_password_min": "Le mot de passe actuel doit comporter au moins 6 caractères.",
-        "new_password_min": "Le nouveau mot de passe doit comporter au moins 6 caractères.",
-        "new_password_max": "Le mot de passe doit comporter au maximum 25 caractères.",
-        "new_password_confirm_min": "La confirmation du nouveau mot de passe doit comporter au moins 6 caractères.",
-        "passwords_do_not_match": "Les mots de passe ne correspondent pas.",
-        "username_no_spaces": "Le nom d'utilisateur ne doit pas contenir d'espaces ni de lettres majuscules."
-      },
-      "account_settings_title": "Paramètres du compte",
-      "account_settings_description": "Mettez à jour vos informations personnelles et les détails de votre compte.",
-      "forename_label": "Prénom",
-      "name_label": "Nom",
-      "username_label": "Nom d'utilisateur",
-      "email_label": "Email",
-      "password_label": "Mot de passe",
-      "choose_image": "Choisir une image",
-      "delete_account_title": "Supprimer le compte",
-      "delete_account_description": "Soyez très prudent avec votre action, il n'y a pas de retour en arrière",
-      "accept_delete_account": "J'accepte de supprimer mon compte définitivement",
-      "accept_delete_account_description": "Veuillez noter que cette action est irréversible et supprimera toutes vos données et paramètres. Si vous êtes sûr, veuillez cocher la case pour confirmer.",
-      "password_placeholder": "********",
-      "delete_account_button": "Supprimer ce compte",
-      "edit_profile_title": "Modifier le profil",
-      "edit_profile_description": "Apportez des modifications à votre mot de passe ici. Cliquez sur enregistrer lorsque vous avez terminé.",
-      "current_password_label": "Mot de passe actuel",
-      "new_password_label": "Nouveau mot de passe",
-      "new_password_confirm_label": "Confirmation du nouveau mot de passe",
-      "updating_account": "Mise à jour du compte...",
-      "updating_password": "Mise à jour du mot de passe...",
-      "updating_profile_picture": "Mise à jour de la photo de profil...",
-      "change_password": "Changer le mot de passe",
-      "delete_account": "Supprimer le compte",
-      "deleting_account": "Suppression du compte...",
-      "actions": "Actions"
-    },
-    "login": {
-      "welcome_back": "Content de vous revoir",
-      "field": "Nom d'utilisateur ou email",
-      "field_description": "Entrez votre nom d'utilisateur ou email",
-      "password": "Mot de passe",
-      "password_description": "Entrez votre mot de passe",
-      "login_button": "Connexion",
-      "login_button_google": "Se connecter avec Google",
-      "no_account": "Vous n'avez pas de compte ?",
-      "sign_up": "S'inscrire",
-      "agree_terms": "En cliquant sur Connexion, vous acceptez nos Conditions Générales de Service.",
-      "errors": {
-        "login_name_min": "Nom d'utilisateur ou email doit comporter au moins 2 caractères",
-        "password_min": "Le mot de passe doit comporter au moins 6 caractères",
-        "password_max": "Le mot de passe doit comporter au plus 255 caractères",
-        "login_name_no_spaces": "Le nom d'utilisateur ou l'email ne doit pas contenir d'espaces ni de lettres majuscules."
-      },
-      "or_continue_with": "Ou continuer avec"
-    },
-    "register": {
-      "title": "Créer un compte",
-      "password_creation": "Créer un mot de passe ",
-      "forename": "Prénom",
-      "name": "Nom",
-      "username": "Nom d'utilisateur",
-      "username_description": "Entrez votre nom d'utilisateur",
-      "email": "Email",
-      "email_description": "Entrez votre email",
-      "password": "Mot de passe",
-      "password_description": "Entrez votre mot de passe",
-      "confirmPassword": "Confirmer le mot de passe",
-      "confirmPassword_description": "Entrez à nouveau votre mot de passe pour vérification",
-      "register": "S'inscrire",
-      "register_google": "S'inscrire avec Google",
-      "already_have_account": "Vous avez déjà un compte ?",
-      "login": "Connexion",
-      "terms_and_conditions": "En cliquant sur s'inscrire, vous acceptez nos Conditions d'utilisation et Conditions.",
-      "errors": {
-        "name_min": "Le nom doit comporter au moins 2 caractères.",
-        "name_max": "Le nom doit comporter au maximum 25 caractères.",
-        "forename_min": "Le prénom doit comporter au moins 2 caractères.",
-        "forename_max": "Le prénom doit comporter au maximum 25 caractères.",
-        "username_min": "Le nom d'utilisateur doit comporter au moins 2 caractères.",
-        "username_max": "Le nom d'utilisateur doit comporter au maximum 25 caractères.",
-        "username_no_spaces": "Le nom d'utilisateur ne doit pas contenir d'espaces ni de lettres majuscules.",
-        "invalid_email": "Veuillez entrer une adresse email valide.",
-        "password_max": "Le mot de passe doit comporter au maximum 255 caractères.",
-        "passwords_mismatch": "Les mots de passe ne correspondent pas.",
-        "password_invalid": "Le mot de passe doit contenir au moins 8 caractères, une lettre minuscule, une lettre majuscule, un chiffre et un caractère spécial."
-      }
-    },
     "admin": {
-      "home": "Accueil",
-      "dashboard": "Tableau de bord",
-      "users": "Utilisateurs",
-      "projects": "Projets",
-      "settings": "Paramètres",
-      "admin": "Admin",
-      "logs": "Journaux",
-      "back_to_app": "Retour à l'accueil",
-      "dashboard_page": {
-        "active_users": "Utilisateurs actifs",
-        "total_users": "Utilisateurs totaux",
-        "auth_methods": "Méthodes d'authentification",
-        "auth_methods_description": "Cette section indique le nombre d'utilisateurs inscrits par méthode d'authentification.",
-        "of_users": "des utilisateurs"
+      "menu_items": {
+        "dashboard": "Tableau de bord",
+        "users": "Utilisateurs",
+        "projects": "Projets",
+        "logs": "Journaux",
+        "settings": "Paramètres"
       },
-      "config_page": {
-        "title": "Configuration",
-        "description": "Cette page vous permet de configurer les paramètres de l'application. Assurez-vous d'enregistrer vos modifications avant de quitter cette page.",
-        "save_changes": "Enregistrer les modifications",
-        "updating_config": "Mise à jour de la configuration...",
-        "app_name": "Nom de l'application",
-        "app_name_description": "Saisissez le nom de votre application. Il sera affiché dans l'en-tête et à divers endroits de l'application.",
-        "accent_color": "Couleur d'accentuation",
-        "accent_color_description": "Choisissez la couleur d'accentuation de votre application. Elle sera utilisée à plusieurs endroits dans l'application."
-      },
-      "log_page": {
-        "level": "Niveau",
-        "user": "Utilisateur",
-        "unknow_user": "Utilisateur inconnu",
-        "message": "Message",
-        "date": "Date",
-        "actions": "Actions",
-        "copy_id": "Copier l'ID de la log",
-        "copy_id_success": "ID de la log copié dans le presse-papiers",
-        "delete_log": "Supprimer cette log",
-        "levels": {
-          "info": "Information",
-          "warn": "Avertissement",
-          "error": "Erreur",
-          "debug": "Débogage"
-        }
-      },
-      "users_page": {
-        "user": "Utilisateur",
-        "username": "Nom d'utilisateur",
-        "email": "E-mail",
-        "role": "Rôle",
-        "joined": "Inscrit le",
-        "actions": "Actions",
-        "auth_type": "Type d'authentification",
-        "roles": {
-          "admin": "Administrateur",
-          "user": "Utilisateur"
-        },
-        "a_user": "un utilisateur",
+      "projects_page": {
+        "title": "Projets",
+        "description": "Gérez vos projets et leurs configurations.",
         "actions_type": {
           "create": "Créer",
           "update": "Mettre à jour",
           "delete": "Supprimer"
         },
-        "copy_id": "Copier l'ID de l'utilisateur",
-        "copy_id_success": "ID de l'utilisateur copié dans le presse-papiers",
-        "delete_user": "Supprimer cet utilisateur",
-        "update_user": "Mettre à jour cet utilisateur",
-        "form": {
-          "name_min": "Le nom doit comporter au moins 2 caractères.",
-          "name_max": "Le nom doit comporter au maximum 25 caractères.",
-          "forename_min": "Le prénom doit comporter au moins 2 caractères.",
-          "forename_max": "Le prénom doit comporter au maximum 25 caractères.",
-          "username_min": "Le nom d'utilisateur doit comporter au moins 2 caractères.",
-          "username_max": "Le nom d'utilisateur doit comporter au maximum 25 caractères.",
-          "invalid_email": "Adresse e-mail invalide.",
-          "username_no_spaces": "Le nom d'utilisateur ne doit pas contenir d'espaces ni de lettres majuscules.",
-          "password_required": "Le mot de passe est requis.",
-          "confirm_delete_required": "Confirmez la suppression en tapant \"DELETE\".",
-          "forename": "Prénom",
-          "name": "Nom",
-          "username": "Nom d'utilisateur",
-          "email": "E-mail",
-          "password": "Mot de passe",
-          "generate_password": "Générer",
-          "copy_password": "Copier le mot de passe",
-          "no_password_yet": "Aucun mot de passe généré pour le moment",
-          "password_generated": "Mot de passe généré avec succès",
-          "password_copied": "Mot de passe copié dans le presse-papiers",
-          "role": "Rôle",
-          "select_role_placeholder": "Sélectionnez un rôle pour le nouvel utilisateur",
-          "user": "Utilisateur",
-          "admin": "Administrateur",
-          "save": "Enregistrer",
-          "update": "Mettre à jour",
-          "confirm_delete_label": "Tapez \"DELETE\" pour confirmer",
-          "confirm_delete_placeholder": "DELETE",
-          "delete": "Supprimer",
-          "confirm_text_invalid": "Le texte de confirmation est incorrect"
-        }
-      },
-      "projects_page": {
-        "title": "Gestion des projets",
-        "description": "Gérez vos projets de déploiement, vos dépôts et vos paramètres d'automatisation.",
-        "project": "Projet",
         "a_project": "un projet",
-        "actions": "Actions",
-        "copy_id": "Copier l'ID du projet",
-        "copy_id_success": "ID du projet copié dans le presse-papiers",
-        "copy_webhook_success": "URL du webhook copiée dans le presse-papiers",
-        "delete_project": "Supprimer ce projet",
-        "update_project": "Modifier ce projet",
-        "webhook_url": "URL du webhook",
-        "actions_type": {
-          "create": "Créer",
-          "update": "Modifier",
-          "delete": "Supprimer",
-          "env-vars": "Modifier les variables d'environnement"
-        },
-        "status": {
-          "active": "Actif",
-          "inactive": "Inactif"
-        },
         "delete_description": "Êtes-vous sûr de vouloir supprimer le projet <strong>{{name}}</strong> ? Cette action est irréversible.",
         "form": {
-          "name": "Nom du projet",
-          "name_placeholder": "Mon super projet",
-          "repositoryUrl": "URL du dépôt",
-          "repositoryUrlEdit": "URL du dépôt (ajouter .git)",
+          "name": "Nom",
+          "name_placeholder": "Nom du projet",
+          "repositoryUrlEdit": "URL du dépôt",
           "branch": "Branche",
-          "autoDeploy": "Déploiement automatique",
-          "defaultServerConfig": "Configuration serveur par défaut (JSON)",
-          "save": "Enregistrer",
-          "update": "Modifier",
-          "delete": "Supprimer",
-          "confirm_delete_label": "Tapez \"DELETE\" pour confirmer",
-          "confirm_delete_placeholder": "DELETE"
+          "branch_placeholder": "main",
+          "autoDeploy": "Déploiement automatique"
+        },
+         "columns": {
+          "name": "Nom",
+          "repository": "Dépôt",
+          "branch": "Branche",
+          "autoDeploy": "Déploiement auto",
+          "actions": "Actions"
+        }
+      },
+        "users_page": {
+        "title": "Utilisateurs",
+        "description": "Gérez les accès et les permissions des utilisateurs.",
+        "actions_type": {
+          "create": "Créer",
+          "update": "Mettre à jour",
+          "delete": "Supprimer"
+        },
+        "a_user": "un utilisateur",
+        "delete_description": "Êtes-vous sûr de vouloir supprimer l'utilisateur <strong>{{email}}</strong> ? Cette action est irréversible.",
+        "form": {
+          "name": "Nom",
+          "name_placeholder": "Jean",
+          "forename": "Prénom",
+           "forename_placeholder": "Dupont",
+          "email": "Email",
+          "email_placeholder": "jean.dupont@exemple.com",
+          "password": "Mot de passe",
+           "password_placeholder": "********",
+          "role": "Rôle"
+        },
+         "columns": {
+          "avatar": "Avatar",
+          "name": "Nom",
+          "email": "Email",
+          "role": "Rôle",
+          "actions": "Actions"
         }
       }
     }
   },
-  "components": {
-    "inputFile": {
-      "choose_file": "Choisir un fichier",
-      "choose_image": "Choisir une image"
-    },
-    "colorPicker": {
-      "preset_colors": "Couleurs prédéfinies",
-      "hex_color": "Couleur Hex",
-      "hue": "Teinte",
-      "saturation": "Saturation",
-      "lightness": "Luminosité"
-    },
-    "dataTable": {
-      "no_data": "Aucune donnée disponible",
-      "columns": "Colonnes",
-      "columns_list": {
-        "user": "Utilisateur",
-        "level": "Niveau",
-        "message": "Message",
-        "createdAt": "Date",
-        "username": "Nom d'utilisateur",
-        "email": "Email",
-        "role": "Rôle",
-        "auth_type": "Type d'authentification",
-        "name": "Nom",
-        "repoUrl": "URL du dépôt",
-        "branch": "Branche",
-        "autoDeploy": "Déploiement auto",
-        "webhookUrl": "URL du webhook"
-      },
-      "create_entity": "Créer une nouvelle entité",
-      "delete_entity": "Supprimer toutes les entités",
-      "filters": {
-        "username": "Filtrer par nom d'utilisateur",
-        "message": "Filtrer par message",
-        "name": "Filtrer par nom"
-      },
-      "delete_title": "Supprimer toutes les entités",
-      "delete_description": "Êtes-vous sûr de vouloir supprimer toutes les entités ? Cette action est irréversible.",
-      "footer": {
-        "page": "Page",
-        "of": "sur",
-        "total": "total",
-        "entries": "entrées",
-        "first": "Première",
-        "last": "Dernière",
-        "next": "Suivant",
-        "previous": "Précédent",
-        "per_page": "par page",
-        "all": "Tout"
-      }
+  "global": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "success": "Succès",
+    "buttons": {
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "delete": "Supprimer",
+        "update":"Mettre à jour"
     }
   },
   "footer": {
     "system": "Système",
-    "healthy": "Sain",
     "version": "Version",
     "environment": "Environnement",
-    "built_with": "Fait avec",
-    "for_teams": "pour les équipes DevOps"
-  },
-  "global": {
-    "buttons": {
-      "cancel": "Annuler",
-      "save": "Enregistrer",
-      "update": "Mettre à jour",
-      "delete": "Supprimer"
-    },
-    "expired_session": "Votre session a expiré, veuillez vous reconnecter."
+    "built_with": "Construit avec",
+    "for_teams": "pour les équipes de dev modernes"
   },
   "server": {
-    "global": {
-      "errors": {
-        "missing_fields": "Veuillez remplir tous les champs obligatoires.",
-        "no_such_user": "Aucun utilisateur trouvé."
+      "projects": {
+          "messages": {
+              "created": "Projet créé avec succès",
+              "updated": "Projet mis à jour avec succès",
+              "deleted": "Projet supprimé avec succès"
+          }
       }
-    },
-    "auth": {
-      "errors": {
-        "regex": "Le mot de passe doit comporter au moins 8 caractères, dont au moins une minuscule, une majuscule, un chiffre et un caractère spécial",
-        "password_no_match": "Les mots de passe ne correspondent pas",
-        "email_taken": "Cet email est déjà utilisé",
-        "username_taken": "Ce nom d'utilisateur est déjà utilisé",
-        "invalid_credentials": "Identifiants invalides"
-      },
-      "messages": {
-        "register_success": "Inscription réussie",
-        "login_success": "Connexion réussie",
-        "logout_success": "Déconnexion réussie"
-      }
-    },
-    "upload": {
-      "errors": {
-        "no_file": "Aucun fichier téléchargé",
-        "invalid_file_type": "Type de fichier invalide. Seuls les fichiers jpg, jpeg, png, gif et svg sont autorisés",
-        "limit": "La taille du fichier dépasse la limite autorisée."
-      },
-      "messages": {
-        "avatar_success": "Avatar mis à jour avec succès"
-      }
-    },
-    "users": {
-      "errors": {
-        "email_taken": "Cet email est déjà utilisé",
-        "username_taken": "Ce nom d'utilisateur est déjà utilisé",
-        "invalid_role": "Rôle invalide",
-        "actual_password_incorrect": "Le mot de passe actuel est incorrect",
-        "regex_error": "Le mot de passe doit contenir au moins 8 caractères, incluant des majuscules, des minuscules, des chiffres et des caractères spéciaux.",
-        "passwords_do_not_match": "Le nouveau mot de passe et la confirmation ne correspondent pas",
-        "password_incorrect": "Le mot de passe est incorrect"
-      },
-      "messages": {
-        "user_created": "Utilisateur créé avec succès",
-        "user_updated": "Utilisateur mis à jour avec succès",
-        "password_updated": "Mot de passe mis à jour avec succès",
-        "user_deleted": "Utilisateur supprimé avec succès"
-      }
-    },
-    "admin": {
-      "errors": {
-        "invalid_config": "Configuration invalide",
-        "config_not_found": "Configuration non trouvée",
-        "log_not_found": "Aucune log trouvée"
-      },
-      "messages": {
-        "config_updated": "Configuration mise à jour avec succès",
-        "log_deleted": "Log supprimée avec succès",
-        "logs_cleared": "Logs supprimées avec succès"
-      }
-    },
-    "projects": {
-      "errors": {
-        "not_found": "Projet non trouvé",
-        "unauthorized": "Vous n'êtes pas autorisé à gérer ce projet"
-      },
-      "messages": {
-        "created": "Projet créé avec succès",
-        "updated": "Projet mis à jour avec succès",
-        "deleted": "Projet supprimé avec succès"
-      }
-    }
   }
 }

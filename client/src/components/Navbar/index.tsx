@@ -3,7 +3,7 @@ import { LanguageChanger } from "./languageChanger";
 import { ThemeChanger } from "./themeChanger";
 import { useTranslation } from "react-i18next";
 import { Separator } from "../ui/separator";
-import { Home, House, LogOut, Menu, User, Wrench, X, Globe, Shield, Terminal, Zap } from "lucide-react";
+import { Home, House, LogOut, Menu, User, Wrench, X, Globe, Shield, Terminal, Zap, Info } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
@@ -94,6 +94,12 @@ export const Navbar = () => {
       icon: Wrench,
       auth: authUser?.role === "admin",
     },
+    {
+      label: t("navbar.about"),
+      path: "/about",
+      icon: Info,
+      auth: true,
+    },
   ];
 
   const mobileLinks = [
@@ -113,6 +119,12 @@ export const Navbar = () => {
       path: "/admin/dashboard",
       icon: Wrench,
       auth: authUser?.role === "admin",
+    },
+    {
+      label: t("navbar.about"),
+      path: "/about",
+      icon: Info,
+      auth: !!authUser,
     },
   ];
 
