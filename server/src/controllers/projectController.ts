@@ -19,7 +19,7 @@ export const createProject: RequestHandler = async (req: Request, res: Response)
       repoUrl,
       branch,
       autoDeploy,
-      allowedUsers: allowedUsers || [],
+      allowedUsers: allowedUsers ? [...new Set([...allowedUsers, req.userId])] : [req.userId],
       envVars: req.body.envVars
         ? req.body.envVars.map((v: { key: string; value: string }) => {
             const encrypted = encrypt(v.value);

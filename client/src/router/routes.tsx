@@ -4,6 +4,7 @@ import { LayoutWrapper } from "./layoutWrapper";
 import { Account } from "@/pages/Account";
 import { ProtectedRoute } from "@/router/protectedRoute";
 import { Home } from "@/pages/Home";
+import { Project } from "@/pages/Project";
 import { Index } from "@/pages/Admin";
 import { Logs } from "@/pages/Admin/components/logs";
 import { Users } from "@/pages/Admin/components/users";
@@ -67,6 +68,14 @@ export const Router = () => {
           element={
             <ProtectedRoute authRequired={true}>
               <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/project/:id"
+          element={
+            <ProtectedRoute authRequired={true}>
+              <Project />
             </ProtectedRoute>
           }
         />

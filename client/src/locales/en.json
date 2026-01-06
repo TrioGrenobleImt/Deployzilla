@@ -18,13 +18,16 @@
   "pages": {
     "home": {
       "welcome_message": "Welcome to this boilerplate!",
-      "title": "Dashboard",
+      "title": "My Projects",
+      "subtitle": "Select a project to view its dashboard and deployments.",
       "description": "Real-time CI/CD pipeline and deployment status",
       "active_commit": "Active Commit",
       "branch": "Branch",
       "active_pipeline": "Active Pipeline",
       "project_select_placeholder": "Select a project",
-      "no_projects": "No projects found. Create one in Admin > Projects.",
+      "no_projects_title": "No projects found",
+      "no_projects": "You don't have access to any projects yet. Contact an administrator.",
+      "no_projects_admin": "Get started by creating your first project in the admin panel.",
       "deployment_controls": "Deployment Controls",
       "system_health": {
         "title": "System Health",
@@ -79,6 +82,20 @@
           "failed": "Failed",
           "rolled_back": "Rolled Back"
         }
+      },
+      "go_to_admin": "Go to Admin Panel",
+      "auto_deploy": "Auto-Deploy",
+      "updated_recently": "Updated recently",
+      "view_dashboard": "View Dashboard"
+    },
+    "project": {
+      "not_found": "Project Not Found",
+      "go_home": "Go Home",
+      "live_output_stream": "Live Output Stream",
+      "server_capacity": "Server Capacity",
+      "triggers": {
+        "manual": "Manual",
+        "github": "GitHub"
       }
     },
     "account": {

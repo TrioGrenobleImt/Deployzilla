@@ -18,13 +18,16 @@
   "pages": {
     "home": {
       "welcome_message": "Bienvenue sur ce boilerplate !",
-      "title": "Tableau de bord",
+      "title": "Mes projets",
+      "subtitle": "Sélectionnez un projet pour voir son tableau de bord et ses déploiements.",
       "description": "Statut de la pipeline CI/CD et des déploiements en temps réel",
       "active_commit": "Commit Actif",
       "branch": "Branche",
       "active_pipeline": "Pipeline Active",
       "project_select_placeholder": "Sélectionner un projet",
-      "no_projects": "Aucun projet trouvé. Créez-en un dans Admin > Projets.",
+      "no_projects_title": "Aucun projet trouvé",
+      "no_projects": "Vous n'avez pas accès à des projets. Veuillez contacter votre administrateur.",
+      "no_projects_admin": "Aucun projet trouvé. Créez-en un dans Admin > Projets.",
       "deployment_controls": "Contrôles de déploiement",
       "system_health": {
         "title": "Santé du système",
@@ -79,6 +82,20 @@
           "failed": "Échec",
           "rolled_back": "Roulé en arrière"
         }
+      },
+      "go_to_admin": "Aller au panneau d'administration",
+      "auto_deploy": "Déploiement auto",
+      "updated_recently": "Mis à jour récemment",
+      "view_dashboard": "Voir le tableau de bord"
+    },
+    "project": {
+      "not_found": "Projet introuvable",
+      "go_home": "Retour à l'accueil",
+      "live_output_stream": "Flux de sortie en direct",
+      "server_capacity": "Capacité du serveur",
+      "triggers": {
+        "manual": "Manuel",
+        "github": "GitHub"
       }
     },
     "account": {

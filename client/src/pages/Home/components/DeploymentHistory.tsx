@@ -30,14 +30,8 @@ export const DeploymentHistory = ({ history }: DeploymentHistoryProps) => {
   const { t } = useTranslation();
 
   return (
-    <Card className="bg-background/50 border-border/50">
-      <CardHeader>
-        <CardTitle className="text-lg font-bold flex items-center gap-2">
-          <LuHistory className="w-5 h-5" />
-          {t("pages.home.history.title")}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div>
+      <CardContent className="p-4 pt-3">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent border-border/50">
@@ -59,7 +53,7 @@ export const DeploymentHistory = ({ history }: DeploymentHistoryProps) => {
                     {record.commitHash}
                   </div>
                 </TableCell>
-                <TableCell className="capitalize text-xs text-muted-foreground">{record.trigger}</TableCell>
+                <TableCell className="capitalize text-xs text-muted-foreground">{t(`pages.project.triggers.${record.trigger}`)}</TableCell>
                 <TableCell>
                   <Badge variant="outline" className="text-[10px] h-5 uppercase tracking-tighter">
                     {t(`navbar.environments.${record.environment}`)}
@@ -88,6 +82,6 @@ export const DeploymentHistory = ({ history }: DeploymentHistoryProps) => {
           </TableBody>
         </Table>
       </CardContent>
-    </Card>
+    </div>
   );
 };

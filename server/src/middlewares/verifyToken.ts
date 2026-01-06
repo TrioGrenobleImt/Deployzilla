@@ -37,6 +37,7 @@ export const verifyToken = ({ role }: VerifyTokenOptions = {}) => {
       }
 
       req.userId = new mongoose.Types.ObjectId(decoded.id);
+      req.role = user.role;
 
       if (role && user.role !== role) {
         await createLog({
