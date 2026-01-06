@@ -17,20 +17,29 @@ export const verifyGitHubSignature = (body: any, signature: string | undefined, 
 };
 
 const algorithm = "aes-256-cbc";
-// Ensure this key is 32 bytes.
-// In production, this should be loaded from an environment variable.
-const key = process.env.ENCRYPTION_KEY;
+const rawKey = (process.env.ENCRYPTION_KEY).trim();
+let key: Buffer;
+
+if (rawKey.length === 64) {
+  key = Buffer.from(rawKey, "hex");
+} else {
+  key = Buffer.from(rawKey);
+}
+
+if (key.length !== 32) {
+    console.error(`Invalid ENCRYPTION_KEY length: ${key.length} bytes. Expected 32 bytes.`);
+}
 
 export const encrypt = (text: string) => {
   const iv = crypto.randomBytes(16);
-  const cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
+  const cipher = crypto.createCipheriv(algorithm, key, iv);
   let encrypted = cipher.update(text);
   encrypted = Buffer.concat([encrypted, cipher.final()]);
   return { iv: iv.toString("hex"), content: encrypted.toString("hex") };
 };
 
 export const decrypt = (hash: { iv: string; content: string }) => {
-  const decipher = crypto.createDecipheriv(algorithm, Buffer.from(key), Buffer.from(hash.iv, "hex"));
+  const decipher = crypto.createDecipheriv(algorithm, key, Buffer.from(hash.iv, "hex"));
   let decrypted = decipher.update(Buffer.from(hash.content, "hex"));
   decrypted = Buffer.concat([decrypted, decipher.final()]);
   return decrypted.toString();
