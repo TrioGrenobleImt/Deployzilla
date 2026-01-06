@@ -1,5 +1,6 @@
 import { Request, Response, RequestHandler } from "express";
 import { Project } from "../models/projectModel.js";
+import { encrypt, decrypt } from "../utils/cryptoUtils.js";
 
 /**
  * Creates a new project.
@@ -13,12 +14,17 @@ export const createProject: RequestHandler = async (req: Request, res: Response)
       res.status(400).json({ error: "A project with this repository URL already exists." });
       return;
     }
-
     const project = new Project({
       name,
       repoUrl,
       branch,
       autoDeploy,
+      envVars: req.body.envVars
+        ? req.body.envVars.map((v: { key: string; value: string }) => {
+            const encrypted = encrypt(v.value);
+            return { key: v.key, value: `${encrypted.iv}:${encrypted.content}` };
+          })
+        : [],
     });
 
     await project.save();
@@ -35,7 +41,24 @@ export const createProject: RequestHandler = async (req: Request, res: Response)
 export const getProjects: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const projects = await Project.find().sort({ createdAt: -1 });
-    res.status(200).json(projects);
+    const decryptedProjects = projects.map((project) => {
+      const p = project.toObject();
+      return {
+        ...p,
+        envVars: p.envVars?.map((v: { key: string; value: string }) => {
+          if (v.value && v.value.includes(":")) {
+            const [iv, content] = v.value.split(":");
+            try {
+              return { key: v.key, value: decrypt({ iv, content }) };
+            } catch (e) {
+              return v;
+            }
+          }
+          return v;
+        }),
+      };
+    });
+    res.status(200).json(decryptedProjects);
   } catch (error) {
     console.error("Error getting projects:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -48,7 +71,15 @@ export const getProjects: RequestHandler = async (req: Request, res: Response): 
 export const updateProject: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const updates = req.body;
+    const { envVars, ...otherUpdates } = req.body;
+    let updates = { ...otherUpdates, envVars };
+
+    if (envVars) {
+      updates.envVars = envVars.map((v: { key: string; value: string }) => {
+        const encrypted = encrypt(v.value);
+        return { key: v.key, value: `${encrypted.iv}:${encrypted.content}` };
+      });
+    }
 
     const project = await Project.findByIdAndUpdate(id, updates, { new: true });
     if (!project) {
