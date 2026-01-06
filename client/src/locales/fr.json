@@ -86,7 +86,8 @@
       "go_to_admin": "Aller au panneau d'administration",
       "auto_deploy": "Déploiement auto",
       "updated_recently": "Mis à jour récemment",
-      "view_dashboard": "Voir le tableau de bord"
+      "view_dashboard": "Voir le tableau de bord",
+      "create_project": "Créer un projet"
     },
     "project": {
       "not_found": "Projet introuvable",

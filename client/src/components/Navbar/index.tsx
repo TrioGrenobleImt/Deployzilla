@@ -46,6 +46,20 @@ export const Navbar = () => {
     fetchConfigValues();
   }, [getConfigValue]);
 
+  // Sync selected project with URL
+  useEffect(() => {
+    const match = location.pathname.match(/\/project\/([a-zA-Z0-9]+)/);
+    if (match) {
+      const projectId = match[1];
+      if (selectedProject?._id !== projectId && projects.length > 0) {
+        const project = projects.find((p) => p._id === projectId);
+        if (project) setSelectedProject(project);
+      }
+    } else if (location.pathname === "/") {
+      setSelectedProject(null);
+    }
+  }, [location.pathname, projects, setSelectedProject, selectedProject]);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node) && isOpen) {
@@ -185,7 +199,16 @@ export const Navbar = () => {
             <Separator orientation="vertical" className="h-8" />
             <div className="flex items-center justify-between gap-4">
               {authUser && projects.length > 0 && (
-                <Select value={selectedProject?._id} onValueChange={(id) => setSelectedProject(projects.find((p) => p._id === id) || null)}>
+                <Select
+                  value={selectedProject?._id || ""}
+                  onValueChange={(id) => {
+                    const project = projects.find((p) => p._id === id);
+                    if (project) {
+                      setSelectedProject(project);
+                      navigate(`/project/${project._id}`);
+                    }
+                  }}
+                >
                   <SelectTrigger className="w-[220px] h-9 bg-muted/50 border-border/50 text-xs font-black uppercase tracking-widest text-accent transition-all px-4 group">
                     <div className="flex items-center gap-2 overflow-hidden w-full">
                       <Zap className="w-3.5 h-3.5 shrink-0 fill-accent group-hover:animate-pulse" />

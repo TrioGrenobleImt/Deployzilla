@@ -86,7 +86,8 @@
       "go_to_admin": "Go to Admin Panel",
       "auto_deploy": "Auto-Deploy",
       "updated_recently": "Updated recently",
-      "view_dashboard": "View Dashboard"
+      "view_dashboard": "View Dashboard",
+      "create_project": "Create Project"
     },
     "project": {
       "not_found": "Project Not Found",

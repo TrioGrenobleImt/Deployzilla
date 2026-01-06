@@ -32,7 +32,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         if (found) {
           setSelectedProject(found);
         } else {
-          setSelectedProject(response.data[0]);
+          setSelectedProject(null);
         }
       } else {
         setSelectedProject(null);

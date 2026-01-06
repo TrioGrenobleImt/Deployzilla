@@ -4,14 +4,18 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Folder, GitBranch, ArrowRight, Activity, Clock } from "lucide-react";
+import { Folder, GitBranch, ArrowRight, Activity, Clock, Plus } from "lucide-react";
 import { useAuthContext } from "@/contexts/authContext";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ProjectForm } from "../Admin/components/projects/projectForm";
+import { useState } from "react";
 
 export const Home = () => {
   const { t } = useTranslation();
-  const { projects, loading } = useProjectContext();
+  const { projects, loading, refreshProjects } = useProjectContext();
   const { authUser } = useAuthContext();
   const navigate = useNavigate();
+  const [openDialog, setOpenDialog] = useState(false);
 
   if (loading) {
     return (
@@ -20,10 +24,6 @@ export const Home = () => {
       </div>
     );
   }
-
-  // Filter projects if needed, or rely on backend/context having filtered them already for the user.
-  // The backend projectController.getProjects filters by allowedUsers if not admin.
-  // So 'projects' here should be correct.
 
   return (
     <div className="container mx-auto p-6 lg:p-10 space-y-8 animate-in fade-in duration-500">
@@ -81,15 +81,41 @@ export const Home = () => {
                 </div>
 
                 <div className="pt-2 flex justify-end">
-                  <Button variant="transparent" size="sm" className="gap-2 group-hover:text-accent group-hover:translate-x-1 transition-all">
+                  <Button
+                    variant="transparent"
+                    size="sm"
+                    className="gap-2 group-hover:text-accent group-hover:translate-x-1 transition-all"
+                  >
                     {t("pages.home.view_dashboard")} <ArrowRight className="w-4 h-4" />
                   </Button>
                 </div>
               </CardContent>
             </Card>
           ))}
+          {authUser?.role === "admin" && (
+            <Card
+              className="group relative overflow-hidden border-dashed border-border/50 bg-background/30 hover:bg-accent/5 backdrop-blur-sm transition-all hover:border-accent/50 cursor-pointer flex flex-col items-center justify-center gap-4 min-h-[200px]"
+              onClick={() => setOpenDialog(true)}
+            >
+              <div className="p-4 bg-accent/10 rounded-full group-hover:bg-accent group-hover:scale-110 transition-all duration-100">
+                <Plus className="w-8 h-8 text-accent group-hover:text-accent-foreground" />
+              </div>
+              <h3 className="text-xl font-bold tracking-tight text-muted-foreground group-hover:text-accent transition-colors">
+                {t("pages.home.create_project")}
+              </h3>
+            </Card>
+          )}
         </div>
       )}
+
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>{t("pages.home.create_project")}</DialogTitle>
+          </DialogHeader>
+          <ProjectForm dialog={setOpenDialog} refresh={refreshProjects} action="create" />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
