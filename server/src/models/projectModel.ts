@@ -13,7 +13,7 @@ export interface IProject extends Document {
 const ProjectSchema = new Schema<IProject>(
   {
     name: { type: String, required: true },
-    repoUrl: { type: String, required: true, unique: true },
+    repoUrl: { type: String, required: true },
     branch: { type: String, required: true, default: "main" },
     autoDeploy: { type: Boolean, default: true },
     envVars: [
@@ -25,5 +25,8 @@ const ProjectSchema = new Schema<IProject>(
   },
   { timestamps: true },
 );
+
+// Allow same repoUrl with different branches
+ProjectSchema.index({ repoUrl: 1, branch: 1 }, { unique: true });
 
 export const Project = model<IProject>("Project", ProjectSchema);
