@@ -9,6 +9,7 @@ import { DataTable } from "@/components/customs/dataTable";
 import { useTranslation } from "react-i18next";
 import { useProjectContext } from "@/contexts/projectContext";
 import { EnvVarsManager } from "./EnvVarsManager";
+import { ProjectUsersManager } from "./ProjectUsersManager";
 
 export const Projects = () => {
   const { projects, refreshProjects, loading: contextLoading } = useProjectContext();
@@ -57,6 +58,11 @@ export const Projects = () => {
         setAction("env-vars");
         setOpenDialog(true);
         break;
+      case "manage-users":
+        setSelectedProject(projects.find((p) => p._id === data));
+        setAction("manage-users");
+        setOpenDialog(true);
+        break;
       default:
         break;
     }
@@ -87,13 +93,17 @@ export const Projects = () => {
           <DialogContent className="sm:max-w-[625px]">
             <DialogHeader>
               <DialogTitle>
-                {action === "env-vars"
+                  {action === "env-vars"
                   ? t(`pages.admin.projects_page.actions_type.` + action)
+                  : action === "manage-users"
+                  ? "Manage Authorized Users"
                   : `${t(`pages.admin.projects_page.actions_type.` + action)} ${t("pages.admin.projects_page.a_project")}`}
               </DialogTitle>
             </DialogHeader>
             {action === "env-vars" && selectedProject ? (
               <EnvVarsManager project={selectedProject} onUpdate={fetchProjects} />
+            ) : action === "manage-users" && selectedProject ? (
+              <ProjectUsersManager project={selectedProject} onUpdate={fetchProjects} />
             ) : (
               <ProjectForm dialog={setOpenDialog} refresh={fetchProjects} action={action} project={selectedProject} />
             )}

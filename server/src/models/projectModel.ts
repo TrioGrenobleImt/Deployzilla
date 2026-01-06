@@ -6,6 +6,7 @@ export interface IProject extends Document {
   branch: string;
   autoDeploy: boolean;
   envVars: { key: string; value: string }[];
+  allowedUsers: Schema.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,6 +23,7 @@ const ProjectSchema = new Schema<IProject>(
         value: { type: String, required: true },
       },
     ],
+    allowedUsers: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true },
 );

@@ -6,6 +6,7 @@ declare global {
   namespace Express {
     export interface Request {
       userId: Types.ObjectId;
+      role: string;
     }
   }
 }

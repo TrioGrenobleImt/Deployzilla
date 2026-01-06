@@ -7,7 +7,7 @@ import { encrypt, decrypt } from "../utils/cryptoUtils.js";
  */
 export const createProject: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, repoUrl, branch, autoDeploy } = req.body;
+    const { name, repoUrl, branch, autoDeploy, allowedUsers } = req.body;
 
     const existingProject = await Project.findOne({ repoUrl });
     if (existingProject) {
@@ -19,6 +19,7 @@ export const createProject: RequestHandler = async (req: Request, res: Response)
       repoUrl,
       branch,
       autoDeploy,
+      allowedUsers: allowedUsers || [],
       envVars: req.body.envVars
         ? req.body.envVars.map((v: { key: string; value: string }) => {
             const encrypted = encrypt(v.value);
@@ -40,7 +41,15 @@ export const createProject: RequestHandler = async (req: Request, res: Response)
  */
 export const getProjects: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-    const projects = await Project.find().sort({ createdAt: -1 });
+    const userId = req.userId;
+    const userRole = req.role;
+
+    let query = {};
+    if (userRole !== "admin") {
+      query = { allowedUsers: userId };
+    }
+
+    const projects = await Project.find(query).sort({ createdAt: -1 });
     const decryptedProjects = projects.map((project) => {
       const p = project.toObject();
       return {
@@ -71,8 +80,8 @@ export const getProjects: RequestHandler = async (req: Request, res: Response): 
 export const updateProject: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { envVars, ...otherUpdates } = req.body;
-    let updates = { ...otherUpdates, envVars };
+    const { envVars, allowedUsers, ...otherUpdates } = req.body;
+    let updates = { ...otherUpdates, envVars, allowedUsers };
 
     if (envVars) {
       updates.envVars = envVars.map((v: { key: string; value: string }) => {

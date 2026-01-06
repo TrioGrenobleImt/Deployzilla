@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ProjectInterface } from "@/interfaces/Project";
 import { TFunction } from "i18next";
-import { MoreHorizontal, Copy, Edit, Trash } from "lucide-react";
+import { MoreHorizontal, Copy, Edit, Trash, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -93,6 +93,10 @@ export const getColumns = (callback: (action: string, data: any) => void, t: TFu
             <DropdownMenuItem onClick={() => callback("env-vars", project._id)}>
               <Edit className="mr-2 h-4 w-4" />
               {t("Manage Env Vars")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => callback("manage-users", project._id)}>
+              <Users className="mr-2 h-4 w-4" />
+              Manage Users
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => callback("update", project._id)}>
               <Edit className="mr-2 h-4 w-4" />

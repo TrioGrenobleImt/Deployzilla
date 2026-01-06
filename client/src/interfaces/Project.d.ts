@@ -5,6 +5,7 @@ export interface ProjectInterface {
   branch: string;
   autoDeploy: boolean;
   envVars?: { key: string; value: string }[];
+  allowedUsers?: string[];
   createdAt?: string;
   updatedAt?: string;
 }
