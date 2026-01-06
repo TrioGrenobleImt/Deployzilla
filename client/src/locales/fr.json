@@ -104,6 +104,10 @@
         "api": "API",
         "webhook": "Webhook",
         "github": "GitHub"
+      },
+      "toasts": {
+        "deploy_started": "Déploiement lancé avec succès",
+        "deploy_failed": "Échec du lancement du déploiement"
       }
     },
     "account": {

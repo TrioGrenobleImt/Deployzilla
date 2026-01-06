@@ -15,7 +15,13 @@ services:
     environment:
       - PORT=3000
       - MONG_URI=mongodb://db:27017/Deployzilla
+      - MONG_URI_TEST=mongodb://db:27017/Deployzilla-test
+      - SECRET_ACCESS_TOKEN=secret
+      - ENCRYPTION_KEY=key
       - CORS_ORIGIN=http://localhost:5174
+      - PIPELINE_RUNNER_URL=http://host.docker.internal:8081/api/v1/pipelines/start
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - db
     volumes:

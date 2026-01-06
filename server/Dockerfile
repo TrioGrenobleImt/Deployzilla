@@ -1,7 +1,7 @@
 FROM node:20-slim
 
-# Install pnpm
-RUN npm install -g pnpm
+# Install curl and pnpm
+RUN apt-get update && apt-get install -y curl && npm install -g pnpm
 
 WORKDIR /app
 
