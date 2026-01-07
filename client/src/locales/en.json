@@ -27,7 +27,14 @@
       "no_projects_admin": "Get started by creating your first project in the admin panel.",
       "go_to_admin": "Go to Admin",
       "deployment_controls": "Deployment Controls",
-      "system_health": { "title": "System Health", "uptime": "Uptime", "resp_time": "Avg. Response Time" },
+      "system_health": {
+        "title": "System Health",
+        "uptime": "Uptime",
+        "resp_time": "Avg. Response Time",
+        "success_rate": "Success Rate",
+        "avg_duration": "Avg. Deployment Time",
+        "stability_index": "Stability Index"
+      },
       "empty_state": {
         "admin": {
           "title": "No projects configured",
@@ -72,8 +79,7 @@
         "statuses": {
           "success": "Success",
           "failed": "Failed",
-          "pending": "Pending",
-          "running": "Running"
+          "pending": "Pending"
         }
       },
       "auto_deploy": "Auto-Deploy",

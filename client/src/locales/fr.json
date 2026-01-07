@@ -36,7 +36,10 @@
       "system_health": {
         "title": "Santé du système",
         "uptime": "Disponibilité",
-        "resp_time": "Temps de rép. moyen"
+        "resp_time": "Temps de rép. moyen",
+        "success_rate": "Taux de succès",
+        "avg_duration": "Durée moyenne",
+        "stability_index": "Indice de stabilité"
       },
       "empty_state": {
         "admin": {
@@ -66,7 +69,7 @@
         }
       },
       "controls": {
-        "run_pipeline": "Lancer la pipeline",
+        "run_pipeline": "Lancer le pipeline",
         "deploying": "Déploiement en cours...",
         "redeploy": "Redéployer",
         "rollback": "Rollback",
@@ -86,8 +89,7 @@
         "statuses": {
           "success": "Succès",
           "failed": "Échec",
-          "pending": "En attente",
-          "running": "En cours"
+          "pending": "En attente"
         }
       },
       "auto_deploy": "Déploiement auto",

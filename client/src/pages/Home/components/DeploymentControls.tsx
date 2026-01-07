@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Play, RotateCcw, History, AlertCircle } from "lucide-react";
+import { Play, RotateCcw, History, AlertCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 

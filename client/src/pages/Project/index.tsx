@@ -137,14 +137,27 @@ export const Project = () => {
         else if (stepName === "intrusion-tests") finishedStageId = "7";
 
         if (finishedStageId) {
-          setStages((prev) =>
-            prev.map((stage) => {
+          setStages((prev) => {
+            const newStages: PipelineStage[] = prev.map((stage) => {
               if (stage.id === finishedStageId) {
-                return { ...stage, status: exitCode === 0 ? "success" : "failed" };
+                return { ...stage, status: (exitCode === 0 ? "success" : "failed") as PipelineStage["status"] };
               }
               return stage;
-            }),
-          );
+            });
+
+            // Automatically start the next stage if the current one was successful
+            if (exitCode === 0) {
+              const currentIdx = prev.findIndex((s) => s.id === finishedStageId);
+              if (currentIdx !== -1 && currentIdx < prev.length - 1) {
+                const nextStage = newStages[currentIdx + 1];
+                if (nextStage.status === "pending") {
+                  nextStage.status = "running";
+                }
+              }
+            }
+
+            return newStages;
+          });
           return; // Skip the generic transition logic
         }
       }
@@ -217,6 +230,27 @@ export const Project = () => {
       toast.error(error.response?.data?.error);
       setIsDeploying(false);
     }
+  };
+
+  // Calculate real stats from history
+  const stats = {
+    successRate: history.length > 0 ? Math.round((history.filter((h) => h.status === "success").length / history.length) * 100) : 0,
+    avgDuration:
+      history.length > 0
+        ? (() => {
+            const durations = history
+              .filter((h) => h.duration !== "---")
+              .map((h) => {
+                const [m, s] = h.duration.replace("m", "").replace("s", "").split(" ").map(Number);
+                return m * 60 + s;
+              });
+            if (durations.length === 0) return "---";
+            const avg = Math.round(durations.reduce((a, b) => a + b, 0) / durations.length);
+            return avg > 60 ? `${Math.floor(avg / 60)}m ${avg % 60}s` : `${avg}s`;
+          })()
+        : "---",
+    totalDeployments: history.length,
+    failedDeploys: history.filter((h) => h.status === "failed").length,
   };
 
   if (loading) {
@@ -304,9 +338,9 @@ export const Project = () => {
                   </div>
                   <div className="space-y-1">
                     <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                      {t("pages.home.system_health.uptime")}
+                      {t("pages.home.system_health.success_rate")}
                     </p>
-                    <p className="text-3xl font-black font-mono text-green-500">99.98%</p>
+                    <p className="text-3xl font-black font-mono text-green-500">{stats.successRate}%</p>
                   </div>
                 </div>
 
@@ -314,13 +348,13 @@ export const Project = () => {
 
                 <div className="flex items-center gap-6">
                   <div className="p-4 bg-accent/10 rounded-[2rem]">
-                    <Shield className="w-8 h-8 text-accent" />
+                    <Rocket className="w-8 h-8 text-accent" />
                   </div>
                   <div className="space-y-1">
                     <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                      {t("pages.home.system_health.resp_time")}
+                      {t("pages.home.system_health.avg_duration")}
                     </p>
-                    <p className="text-3xl font-black font-mono text-accent">142ms</p>
+                    <p className="text-3xl font-black font-mono text-accent">{stats.avgDuration}</p>
                   </div>
                 </div>
 
@@ -328,11 +362,14 @@ export const Project = () => {
 
                 <div className="flex-1 max-w-[200px] w-full space-y-3">
                   <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                    <span>{t("pages.project.server_capacity")}</span>
-                    <span className="text-accent">85%</span>
+                    <span>{t("pages.home.system_health.stability_index")}</span>
+                    <span className="text-accent">{Math.max(0, 100 - stats.failedDeploys * 5)}%</span>
                   </div>
                   <div className="w-full bg-muted h-3 rounded-full overflow-hidden p-0.5">
-                    <div className="bg-accent h-full w-[85%] rounded-full animate-pulse shadow-[0_0_15px_rgba(var(--accent),0.5)]" />
+                    <div
+                      className="bg-accent h-full rounded-full animate-pulse shadow-[0_0_15px_rgba(var(--accent),0.5)] transition-all duration-1000"
+                      style={{ width: `${Math.max(10, 100 - stats.failedDeploys * 5)}%` }}
+                    />
                   </div>
                 </div>
               </CardContent>
