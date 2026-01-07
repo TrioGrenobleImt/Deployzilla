@@ -2,11 +2,6 @@ import { useTranslation } from "react-i18next";
 
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PipelineTimeline, PipelineStage } from "./components/PipelineTimeline";
-import { PipelineLogs, LogEntry } from "./components/PipelineLogs";
-import { DeploymentControls } from "./components/DeploymentControls";
-import { DeploymentHistory, DeploymentRecord } from "./components/DeploymentHistory";
-import { useSocketContext } from "@/contexts/socketContext";
 import { useProjectContext } from "@/contexts/projectContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -14,105 +9,14 @@ import { Folder, GitBranch, ArrowRight, Activity, Clock, Plus, Zap, Shield, Term
 import { useAuthContext } from "@/contexts/authContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ProjectForm } from "../Admin/components/projects/projectForm";
-import { useState, useEffect } from "react";
-import { axiosConfig } from "@/config/axiosConfig";
-import { toast } from "sonner";
+import { useState } from "react";
 
 export const Home = () => {
   const { t } = useTranslation();
   const { authUser } = useAuthContext();
-  const { socket } = useSocketContext();
-  const { selectedProject, projects, loading, refreshProjects } = useProjectContext();
+  const { projects, loading, refreshProjects } = useProjectContext();
   const navigate = useNavigate();
   const [openDialog, setOpenDialog] = useState(false);
-  const [isDeploying, setIsDeploying] = useState(false);
-
-  // Initial Stages
-  const initialStages: PipelineStage[] = [
-    { id: "1", name: "Source", status: "pending", icon: Zap },
-    { id: "2", name: "Build", status: "pending", icon: Activity },
-    { id: "3", name: "Tests", status: "pending", icon: Shield },
-    { id: "4", name: "Docker", status: "pending", icon: Terminal },
-    { id: "5", name: "Deploy", status: "pending", icon: Zap },
-  ];
-
-  const [stages, setStages] = useState<PipelineStage[]>(initialStages);
-  const [logs, setLogs] = useState<LogEntry[]>([]);
-
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on("pipeline-log", (log: LogEntry) => {
-      setLogs((prev) => [...prev, log]);
-    });
-
-    socket.on("pipeline-status", ({ stageId, status }: { stageId: string; status: PipelineStage["status"] }) => {
-      setStages((prev) => prev.map((stage) => (stage.id === stageId ? { ...stage, status } : stage)));
-    });
-
-    socket.on("pipeline-completed", () => {
-      setIsDeploying(false);
-    });
-
-    return () => {
-      socket.off("pipeline-log");
-      socket.off("pipeline-status");
-      socket.off("pipeline-completed");
-    };
-  }, [socket]);
-
-  const history: DeploymentRecord[] = [
-    {
-      id: "d1",
-      commitHash: "7f3a21b",
-      trigger: "github",
-      environment: "production",
-      status: "success",
-      duration: "4m 20s",
-      deployedBy: "GitHub Actions",
-      timestamp: "2026-01-05 10:45",
-    },
-    {
-      id: "d2",
-      commitHash: "a2d1f0c",
-      trigger: "manual",
-      environment: "staging",
-      status: "success",
-      duration: "3m 55s",
-      deployedBy: "Admin",
-      timestamp: "2026-01-05 09:12",
-    },
-    {
-      id: "d3",
-      commitHash: "e4f8a9d",
-      trigger: "github",
-      environment: "production",
-      status: "failed",
-      duration: "2m 10s",
-      deployedBy: "GitHub Actions",
-      timestamp: "2024-01-04 18:30",
-    },
-  ];
-
-  const handleDeploy = async () => {
-    if (!selectedProject) return;
-
-    try {
-      setIsDeploying(true);
-      setLogs([]);
-      setStages(initialStages);
-
-      const response = await axiosConfig.post("/webhooks/trigger", {
-        projectId: selectedProject._id,
-      });
-
-      toast.success(t("pages.home.toasts.deploy_started"));
-      console.log(response.data.message);
-    } catch (error: any) {
-      toast.error(error.response?.data?.error);
-      setIsDeploying(false);
-    }
-  };
 
   if (loading) {
     return (

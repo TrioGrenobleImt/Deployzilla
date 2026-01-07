@@ -11,6 +11,8 @@ import { useSocketContext } from "@/contexts/socketContext";
 import { useProjectContext } from "@/contexts/projectContext";
 import { Button } from "@/components/ui/button";
 import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { axiosConfig } from "@/config/axiosConfig";
 
 export const Project = () => {
   const { t } = useTranslation();
@@ -91,20 +93,24 @@ export const Project = () => {
     },
   ];
 
-  const handleDeploy = () => {
-    console.log("Handle deploy clicked");
-    if (!socket) {
-      console.error("Socket is null!");
-      return;
+  const handleDeploy = async () => {
+    if (!selectedProject) return;
+
+    try {
+      setIsDeploying(true);
+      setLogs([]);
+      setStages(initialStages);
+
+      const response = await axiosConfig.post("/webhooks/trigger", {
+        projectId: selectedProject._id,
+      });
+
+      toast.success(t("pages.home.toasts.deploy_started"));
+      console.log(response.data.message);
+    } catch (error: any) {
+      toast.error(error.response?.data?.error);
+      setIsDeploying(false);
     }
-    console.log("Emitting start-pipeline event");
-    setIsDeploying(true);
-    setLogs([]);
-    setStages(initialStages);
-    // Reset UI
-    socket.emit("start-pipeline");
-    // Simulation logic could go here
-    setTimeout(() => setIsDeploying(false), 5000);
   };
 
   if (loading) {
