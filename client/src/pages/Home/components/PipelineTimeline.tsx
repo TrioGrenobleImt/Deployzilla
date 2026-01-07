@@ -55,29 +55,29 @@ export const PipelineTimeline = ({ stages }: PipelineTimelineProps) => {
   return (
     <div className="w-full py-4">
       <div className="relative flex justify-between items-start w-full">
-        {/* Progress Line Background - Positioned relative to icons */}
-        <div className="absolute top-6 left-0 w-full h-0.5 bg-border z-0" />
+        {/* Progress Line Background - Centered on icons (top-9 = 36px) */}
+        <div className="absolute top-9 left-0 w-full h-0.5 bg-border z-0" />
 
         {stages.map((stage, index) => {
           const Config = statusConfig[stage.status];
           const Icon = Config.icon;
 
           return (
-            <div key={stage.id} className="relative z-10 flex flex-col items-center px-2 flex-1">
+            <div key={stage.id} className="relative z-10 flex flex-col items-center px-2 flex-1 pt-2">
               {/* Icon Container */}
               <div
                 className={cn(
-                  "flex items-center justify-center w-12 h-12 rounded-full border-2 bg-background transition-all duration-300 shadow-sm",
+                  "flex items-center justify-center w-14 h-14 rounded-full border-2 bg-background transition-all duration-300 shadow-sm",
                   Config.bg,
                   Config.border,
                   stage.status === "running" && "ring-4 ring-blue-500/20",
                 )}
               >
-                <Icon className={cn("w-6 h-6", Config.color, Config.animate)} />
+                <Icon className={cn("w-7 h-7", Config.color, Config.animate)} />
               </div>
 
               {/* Label & Details */}
-              <div className="mt-4 flex flex-col items-center text-center max-w-[120px]">
+              <div className="mt-5 flex flex-col items-center text-center max-w-[140px]">
                 <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-foreground line-clamp-1">
                   {t(`pages.home.pipeline.stages.${stage.name.toLowerCase()}`)}
                 </span>

@@ -4,7 +4,7 @@ import { PipelineTimeline, PipelineStage } from "../Home/components/PipelineTime
 import { PipelineLogs, LogEntry } from "../Home/components/PipelineLogs";
 import { DeploymentControls } from "../Home/components/DeploymentControls";
 import { DeploymentHistory, DeploymentRecord } from "../Home/components/DeploymentHistory";
-import { Zap, Activity, Shield, Terminal, ArrowLeft } from "lucide-react";
+import { Zap, Activity, Shield, Terminal, ArrowLeft, Search, Eye, Boxes, Container, Rocket, ShieldAlert } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuthContext } from "@/contexts/authContext";
 import { useSocketContext } from "@/contexts/socketContext";
@@ -27,11 +27,13 @@ export const Project = () => {
 
   // Initial Stages
   const initialStages: PipelineStage[] = [
-    { id: "1", name: "Source", status: "pending", icon: Zap },
-    { id: "2", name: "Build", status: "pending", icon: Activity },
-    { id: "3", name: "Tests", status: "pending", icon: Shield },
-    { id: "4", name: "Docker", status: "pending", icon: Terminal },
-    { id: "5", name: "Deploy", status: "pending", icon: Zap },
+    { id: "1", name: "Clone", status: "pending", icon: Zap },
+    { id: "2", name: "Eslint", status: "pending", icon: Search },
+    { id: "3", name: "Sonar", status: "pending", icon: Eye },
+    { id: "4", name: "Kubernetes", status: "pending", icon: Boxes },
+    { id: "5", name: "Docker", status: "pending", icon: Container },
+    { id: "6", name: "Déploiement", status: "pending", icon: Rocket },
+    { id: "7", name: "Tests Intrusions", status: "pending", icon: ShieldAlert },
   ];
 
   const [stages, setStages] = useState<PipelineStage[]>(initialStages);
@@ -91,20 +93,60 @@ export const Project = () => {
     socket.on("pipeline-log", (log: LogEntry) => {
       setLogs((prev) => [...prev, log]);
 
-      // Heureustics to update stages based on log message
-      const msg = log.message.toLowerCase();
+      // Heuristics to update stages based on log message
+      const msg = log.message.toLocaleLowerCase();
       let currentStageId = "";
+      let isSuccess = false;
+      let isFailed = false;
 
-      if (msg.includes("cloning") || msg.includes("checkout") || msg.includes("fetching repo")) {
-        currentStageId = "1"; // Source
-      } else if (msg.includes("install") || msg.includes("building") || msg.includes("compiling")) {
-        currentStageId = "2"; // Build
-      } else if (msg.includes("test") || msg.includes("vitest") || msg.includes("jest")) {
-        currentStageId = "3"; // Tests
-      } else if (msg.includes("docker") || msg.includes("building image") || msg.includes("pushing to registry")) {
-        currentStageId = "4"; // Docker
-      } else if (msg.includes("deploying") || msg.includes("updating service") || msg.includes("restarting")) {
-        currentStageId = "5"; // Deploy
+      // Detection of "Starting" markers (explicit from some runners)
+      if (msg.includes("step [git-clone] starting") || msg.includes("cloning") || msg.includes("checkout")) {
+        currentStageId = "1";
+      } else if (msg.includes("step [eslint] starting") || msg.includes("eslint") || msg.includes("linting")) {
+        currentStageId = "2";
+      } else if (msg.includes("step [sonar] starting") || msg.includes("sonar") || msg.includes("analysis")) {
+        currentStageId = "3";
+      } else if (msg.includes("step [kubernetes] starting") || msg.includes("k8s") || msg.includes("kubectl")) {
+        currentStageId = "4";
+      } else if (msg.includes("step [docker-build] starting") || msg.includes("building docker image") || msg.includes("docker build")) {
+        currentStageId = "5";
+      } else if (msg.includes("step [deploy] starting") || msg.includes("deploying") || msg.includes("deployment")) {
+        currentStageId = "6";
+      } else if (
+        msg.includes("step [intrusion-tests] starting") ||
+        msg.includes("security") ||
+        msg.includes("zap") ||
+        msg.includes("penetration")
+      ) {
+        currentStageId = "7";
+      }
+
+      // Detection of "Finished" markers
+      const finishedMatch = log.message.match(/--- Step \[(.+)\] Finished \(Exit: (\d+)\) ---/);
+      if (finishedMatch) {
+        const stepName = finishedMatch[1];
+        const exitCode = parseInt(finishedMatch[2]);
+        let finishedStageId = "";
+
+        if (stepName === "git-clone") finishedStageId = "1";
+        else if (stepName === "eslint") finishedStageId = "2";
+        else if (stepName === "sonar") finishedStageId = "3";
+        else if (stepName === "kubernetes-prep") finishedStageId = "4";
+        else if (stepName === "docker-build") finishedStageId = "5";
+        else if (stepName === "deploy") finishedStageId = "6";
+        else if (stepName === "intrusion-tests") finishedStageId = "7";
+
+        if (finishedStageId) {
+          setStages((prev) =>
+            prev.map((stage) => {
+              if (stage.id === finishedStageId) {
+                return { ...stage, status: exitCode === 0 ? "success" : "failed" };
+              }
+              return stage;
+            }),
+          );
+          return; // Skip the generic transition logic
+        }
       }
 
       if (currentStageId) {
@@ -117,7 +159,9 @@ export const Project = () => {
               return { ...stage, status: "success" };
             }
             if (stageNum === currentNum) {
-              return { ...stage, status: "running" };
+              if (stage.status !== "success" && stage.status !== "failed") {
+                return { ...stage, status: "running" };
+              }
             }
             return stage;
           }),
@@ -226,105 +270,108 @@ export const Project = () => {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-10">
-        {/* Left Column: Pipeline & Logs */}
-        <div className="lg:col-span-2 space-y-8">
-          <section className="space-y-4">
-            <div className="flex items-center gap-3 ml-1">
-              <div className="w-1.5 h-6 bg-accent rounded-full" />
-              <h2 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">{t("pages.home.active_pipeline")}</h2>
-            </div>
-            <div className="bg-background/60 dark:bg-zinc-900/40 backdrop-blur-md rounded-[2rem] border border-border/50 p-8 shadow-xl shadow-black/5">
-              <PipelineTimeline stages={stages} />
-            </div>
-          </section>
-        </div>
-
-        {/* Right Column: Controls & Stats */}
-        <div className="space-y-8">
+      <div className="space-y-10 relative z-10">
+        {/* Row 1: Controls & Stats */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          {/* Controls - Left (1/3) */}
           <section className="space-y-4">
             <div className="flex items-center gap-3 ml-1">
               <div className="w-1.5 h-6 bg-accent rounded-full" />
               <h2 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">{t("pages.home.deployment_controls")}</h2>
             </div>
-            <div className="bg-background/60 dark:bg-zinc-900/40 backdrop-blur-md rounded-[2rem] border border-border/50 p-6 shadow-xl shadow-black/5">
+            <div className="bg-background/60 dark:bg-zinc-900/40 backdrop-blur-md rounded-[2.5rem] border border-border/50 p-8 shadow-xl shadow-black/5 h-full flex flex-col justify-center">
               <DeploymentControls
                 onDeploy={handleDeploy}
                 onRedeploy={() => {}}
                 onRollback={() => {}}
-                canDeploy={authUser?.role === "admin"} // Or check project permissions
+                canDeploy={authUser?.role === "admin"}
                 isDeploying={isDeploying}
               />
             </div>
           </section>
 
-          {/*<section className="space-y-4">
+          {/* Stats - Right (2/3) */}
+          <section className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3 ml-1">
               <div className="w-1.5 h-6 bg-accent rounded-full" />
               <h2 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">{t("pages.home.system_health.title")}</h2>
             </div>
-            <Card className="bg-background/60 dark:bg-zinc-900/40 backdrop-blur-md rounded-[2rem] border-border/50 shadow-xl shadow-black/5">
-              <CardContent className="p-8 space-y-6">
-                <div className="flex items-center justify-between">
+            <Card className="bg-background/60 dark:bg-zinc-900/40 backdrop-blur-md rounded-[2.5rem] border-border/50 shadow-xl shadow-black/5 border-none h-full">
+              <CardContent className="p-10 flex flex-col md:flex-row gap-8 justify-between items-center h-full">
+                <div className="flex items-center gap-6">
+                  <div className="p-4 bg-green-500/10 rounded-[2rem]">
+                    <Activity className="w-8 h-8 text-green-500" />
+                  </div>
                   <div className="space-y-1">
                     <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                       {t("pages.home.system_health.uptime")}
                     </p>
-                    <p className="text-2xl font-black font-mono text-green-500">99.98%</p>
-                  </div>
-                  <div className="p-3 bg-green-500/10 rounded-2xl">
-                    <Activity className="w-6 h-6 text-green-500" />
+                    <p className="text-3xl font-black font-mono text-green-500">99.98%</p>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="hidden md:block w-px h-12 bg-border/50" />
+
+                <div className="flex items-center gap-6">
+                  <div className="p-4 bg-accent/10 rounded-[2rem]">
+                    <Shield className="w-8 h-8 text-accent" />
+                  </div>
                   <div className="space-y-1">
                     <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                       {t("pages.home.system_health.resp_time")}
                     </p>
-                    <p className="text-2xl font-black font-mono text-accent">142ms</p>
-                  </div>
-                  <div className="p-3 bg-accent/10 rounded-2xl">
-                    <Shield className="w-6 h-6 text-accent" />
+                    <p className="text-3xl font-black font-mono text-accent">142ms</p>
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="hidden md:block w-px h-12 bg-border/50" />
+
+                <div className="flex-1 max-w-[200px] w-full space-y-3">
                   <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                     <span>{t("pages.project.server_capacity")}</span>
-                    <span>85%</span>
+                    <span className="text-accent">85%</span>
                   </div>
-                  <div className="w-full bg-muted h-2.5 rounded-full overflow-hidden">
-                    <div className="bg-accent h-full w-[85%] animate-pulse" />
+                  <div className="w-full bg-muted h-3 rounded-full overflow-hidden p-0.5">
+                    <div className="bg-accent h-full w-[85%] rounded-full animate-pulse shadow-[0_0_15px_rgba(var(--accent),0.5)]" />
                   </div>
                 </div>
               </CardContent>
             </Card>
           </section>
-          */}
         </div>
 
-        <section className="lg:col-span-3 space-y-4">
+        {/* Row 2: Pipeline Timeline (Full Width) */}
+        <section className="space-y-4 pt-10">
+          <div className="flex items-center gap-3 ml-1">
+            <div className="w-1.5 h-6 bg-accent rounded-full" />
+            <h2 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">{t("pages.home.active_pipeline")}</h2>
+          </div>
+          <div className="bg-background/60 dark:bg-zinc-900/40 backdrop-blur-md rounded-[2.5rem] border border-border/50 p-10 shadow-xl shadow-black/5">
+            <PipelineTimeline stages={stages} />
+          </div>
+        </section>
+
+        {/* Row 3: Logs (Full Width) */}
+        <section className="space-y-4">
           <div className="flex items-center gap-3 ml-1">
             <div className="w-1.5 h-6 bg-accent rounded-full" />
             <h2 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">{t("pages.project.live_output_stream")}</h2>
           </div>
-          <div className="rounded-[2rem] overflow-hidden border border-border/50 shadow-xl shadow-black/5 bg-background/60 dark:bg-zinc-900/40 backdrop-blur-md">
+          <div className="rounded-[2.5rem] overflow-hidden border border-border/50 shadow-xl shadow-black/5 bg-background/60 dark:bg-zinc-900/40 backdrop-blur-md">
             <PipelineLogs logs={logs} />
           </div>
         </section>
 
-        {/* Bottom Section: History */}
-        <div className="lg:col-span-3 space-y-4">
+        {/* Row 4: History (Full Width) */}
+        <section className="space-y-4">
           <div className="flex items-center gap-3 ml-1">
             <div className="w-1.5 h-6 bg-accent rounded-full" />
             <h2 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">{t("pages.home.history.title")}</h2>
           </div>
-
           <div className="bg-background/60 dark:bg-zinc-900/40 backdrop-blur-md rounded-[2.5rem] border border-border/50 p-2 shadow-xl shadow-black/5 overflow-hidden">
             <DeploymentHistory history={history} repoUrl={selectedProject?.repoUrl} />
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );

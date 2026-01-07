@@ -40,7 +40,15 @@
         }
       },
       "pipeline": {
-        "stages": { "source": "Source", "build": "Build", "tests": "Tests", "docker": "Docker", "deploy": "Deploy" },
+        "stages": {
+          "clone": "Clone",
+          "eslint": "ESLint",
+          "sonar": "SonarQube",
+          "kubernetes": "Kubernetes",
+          "docker": "Docker",
+          "déploiement": "Deployment",
+          "tests intrusions": "Intrusion Tests"
+        },
         "logs": { "title": "Pipeline Logs", "filter_placeholder": "Filter logs...", "no_logs": "No logs matching your filter" }
       },
       "controls": {

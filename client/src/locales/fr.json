@@ -51,11 +51,13 @@
       },
       "pipeline": {
         "stages": {
-          "source": "Source",
-          "build": "Build",
-          "tests": "Tests",
+          "clone": "Clone",
+          "eslint": "ESLint",
+          "sonar": "SonarQube",
+          "kubernetes": "Kubernetes",
           "docker": "Docker",
-          "deploy": "Déploiement"
+          "déploiement": "Déploiement",
+          "tests intrusions": "Tests Intrusions"
         },
         "logs": {
           "title": "Journaux de pipeline",
