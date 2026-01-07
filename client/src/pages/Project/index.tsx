@@ -36,6 +36,54 @@ export const Project = () => {
 
   const [stages, setStages] = useState<PipelineStage[]>(initialStages);
   const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [history, setHistory] = useState<DeploymentRecord[]>([]);
+
+  const fetchHistory = async () => {
+    if (!selectedProject) return;
+    try {
+      const response = await axiosConfig.get(`/pipelines/project/${selectedProject._id}`);
+      const mappedHistory: DeploymentRecord[] = response.data.map((p: any) => {
+        let startTime = p.createdAt;
+        let durationStr = "---";
+
+        if (p.jobs && p.jobs.length > 0) {
+          const startTimes = p.jobs.map((j: any) => new Date(j.startTime).getTime()).filter((t: number) => !isNaN(t));
+          const endTimes = p.jobs.map((j: any) => new Date(j.endTime).getTime()).filter((t: number) => !isNaN(t));
+
+          if (startTimes.length > 0) {
+            const minStart = Math.min(...startTimes);
+            startTime = new Date(minStart).toISOString();
+
+            if (endTimes.length > 0) {
+              const maxEnd = Math.max(...endTimes);
+              const durationMs = maxEnd - minStart;
+              const minutes = Math.floor(durationMs / 60000);
+              const seconds = Math.floor((durationMs % 60000) / 1000);
+              durationStr = `${minutes}m ${seconds}s`;
+            }
+          }
+        }
+
+        return {
+          id: p._id,
+          commitHash: p.commitHash ? p.commitHash.substring(0, 7) : "---",
+          trigger: p.commitHash ? "github" : "manual",
+          environment: "production",
+          status: p.status.toLowerCase() as any,
+          duration: durationStr,
+          deployedBy: p.author || "System",
+          timestamp: new Date(startTime).toLocaleString(),
+        };
+      });
+      setHistory(mappedHistory.reverse());
+    } catch (error) {
+      console.error("Error fetching history:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchHistory();
+  }, [selectedProject]);
 
   useEffect(() => {
     if (!socket) return;
@@ -93,6 +141,7 @@ export const Project = () => {
           }
         }),
       );
+      fetchHistory(); // Refresh history when completed
     });
 
     return () => {
@@ -101,40 +150,6 @@ export const Project = () => {
       socket.off("pipeline-completed");
     };
   }, [socket]);
-
-  // TODO: Fetch real history based on project
-  const history: DeploymentRecord[] = [
-    {
-      id: "d1",
-      commitHash: "7f3a21b",
-      trigger: "github",
-      environment: "production",
-      status: "success",
-      duration: "4m 20s",
-      deployedBy: "GitHub Actions",
-      timestamp: "2026-01-05 10:45",
-    },
-    {
-      id: "d2",
-      commitHash: "a2d1f0c",
-      trigger: "manual",
-      environment: "staging",
-      status: "success",
-      duration: "3m 55s",
-      deployedBy: "Admin",
-      timestamp: "2026-01-05 09:12",
-    },
-    {
-      id: "d3",
-      commitHash: "e4f8a9d",
-      trigger: "github",
-      environment: "production",
-      status: "failed",
-      duration: "2m 10s",
-      deployedBy: "GitHub Actions",
-      timestamp: "2024-01-04 18:30",
-    },
-  ];
 
   const handleDeploy = async () => {
     if (!selectedProject) return;

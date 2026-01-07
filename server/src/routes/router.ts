@@ -7,6 +7,7 @@ import { logRouter } from "./logsRoutes.js";
 import { uploadRouter } from "./uploadRoutes.js";
 import { webhookRooter } from "./webHooksRoutes.js";
 import { projectRouter } from "./projectRoutes.js";
+import { pipelineRouter } from "./pipelineRoutes.js";
 
 import path from "path";
 import { fileURLToPath } from "url";
@@ -22,6 +23,7 @@ router.use("/api/logs", logRouter); // Logging routes
 router.use("/api/config", configRouter); // Config routes
 router.use("/api/webhooks", webhookRooter); // GitHub routes
 router.use("/api/projects", projectRouter); // Project routes
+router.use("/api/pipelines", pipelineRouter); // Pipeline routes
 
 // // UPLOADS routes
 router.use("/api/uploads", uploadRouter); // File upload routes

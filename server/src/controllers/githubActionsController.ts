@@ -1,14 +1,15 @@
 import { Request, Response, RequestHandler } from "express";
 // import { verifyGitHubSignature } from "../utils/cryptoUtils.js";
 import { Project } from "../models/projectModel.js";
+import { User } from "../models/userModel.js";
 
 /**
  * Triggers the pipeline runner via cURL
  */
-const triggerPipeline = async (projectId: string): Promise<string> => {
+const triggerPipeline = async (projectId: string, commitHash?: string, author?: string): Promise<string> => {
   const runnerUrl = process.env.PIPELINE_RUNNER_URL;
 
-  const payload = JSON.stringify({ projectId });
+  const payload = JSON.stringify({ projectId, commitHash, author });
   const curlCommand = `curl -X POST "${runnerUrl}" -H "Content-Type: application/json" -d '${payload}'`;
 
   const { stdout, stderr } = await new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
@@ -45,12 +46,14 @@ export const handleGitHubWebhook: RequestHandler = async (req: Request, res: Res
 
     const branch = ref.replace("refs/heads/", "");
     const repoUrl = repository.clone_url;
+    const commitHash = rawPayload.after;
+    const author = rawPayload.pusher?.name;
 
     const project = await Project.findOne({ repoUrl });
 
     if (project && project.autoDeploy && project.branch === branch) {
       try {
-        const stdout = await triggerPipeline(project.id);
+        const stdout = await triggerPipeline(project.id, commitHash, author);
         res.status(200).send({ message: stdout });
         return;
       } catch (err: any) {
@@ -85,7 +88,10 @@ export const handleManualTrigger: RequestHandler = async (req: Request, res: Res
       return;
     }
 
-    const stdout = await triggerPipeline(project.id);
+    const user = await User.findById(req.userId);
+    const author = user ? `${user.forename} ${user.name}` : "Unknown";
+
+    const stdout = await triggerPipeline(project.id, undefined, author);
     res.status(200).json({ message: stdout });
   } catch (err: any) {
     res.status(500).json({ error: err.message });

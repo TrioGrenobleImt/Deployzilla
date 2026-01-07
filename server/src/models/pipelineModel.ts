@@ -1,24 +1,26 @@
-import { Schema, model, Document, Types } from "mongoose";
+import { Schema, model, Document } from "mongoose";
 
 export interface IPipeline extends Document {
-  projectId: Types.ObjectId;
-  branch: string;
+  _id: string;
+  projectId: string;
   status: "PENDING" | "RUNNING" | "SUCCESS" | "FAILED";
-  trigger: "manual" | "github";
-  logId?: Types.ObjectId;
+  jobs: any[];
+  commitHash?: string;
+  author?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 const PipelineSchema = new Schema<IPipeline>(
   {
-    projectId: { type: Schema.Types.ObjectId, ref: "Project", required: true },
-    branch: { type: String, required: true },
-    status: { type: String, enum: ["PENDING", "RUNNING", "SUCCESS", "FAILED"], default: "PENDING" },
-    trigger: { type: String, enum: ["manual", "github"], default: "manual" },
-    logId: { type: Schema.Types.ObjectId, ref: "Log" },
+    _id: { type: String, required: true },
+    projectId: { type: String, required: true },
+    status: { type: String, default: "PENDING" },
+    jobs: { type: Schema.Types.Mixed, default: [] },
+    commitHash: { type: String },
+    author: { type: String },
   },
-  { timestamps: true },
+  { timestamps: true, _id: false },
 );
 
 export const Pipeline = model<IPipeline>("Pipeline", PipelineSchema);
