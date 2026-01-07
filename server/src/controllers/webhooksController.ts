@@ -4,6 +4,7 @@ import { Project } from "../models/projectModel.js";
 import { User } from "../models/userModel.js";
 import { createLog } from "./logController.js";
 import { logLevels } from "../utils/enums/logLevels.js";
+import { io } from "../sockets/socket.js";
 
 /**
  * Triggers the pipeline runner via cURL
@@ -57,6 +58,8 @@ export const handleGitHubWebhook: RequestHandler = async (req: Request, res: Res
       try {
         const stdout = await triggerPipeline(project.id, commitHash, author);
 
+        io?.emit("pipeline-started", { projectId: project.id });
+
         createLog({
           message: `Pipeline triggered via GitHub Webhook for project ${project.name} (Commit: ${commitHash?.substring(0, 7)})`,
           userId: undefined as any,
@@ -98,9 +101,11 @@ export const handleManualTrigger: RequestHandler = async (req: Request, res: Res
     }
 
     const user = await User.findById(req.userId);
-    const author = user ? `${user.forename} ${user.name}` : "Unknown";
+    const author = user?.username || "Unknown";
 
     const stdout = await triggerPipeline(project.id, undefined, author);
+
+    io?.emit("pipeline-started", { projectId: project.id });
 
     createLog({
       message: `User ${author} manually triggered pipeline for project ${project.name}`,

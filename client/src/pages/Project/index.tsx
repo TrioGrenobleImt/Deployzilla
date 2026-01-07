@@ -66,7 +66,7 @@ export const Project = () => {
 
         return {
           id: p._id,
-          commitHash: p.commitHash ? p.commitHash.substring(0, 7) : "---",
+          commitHash: p.commitHash || "---",
           trigger: p.commitHash ? "github" : "manual",
           environment: "production",
           status: p.status.toLowerCase() as any,
@@ -142,6 +142,10 @@ export const Project = () => {
         }),
       );
       fetchHistory(); // Refresh history when completed
+    });
+
+    socket.on("pipeline-started", () => {
+      fetchHistory();
     });
 
     return () => {
@@ -318,7 +322,7 @@ export const Project = () => {
           </div>
 
           <div className="bg-background/60 dark:bg-zinc-900/40 backdrop-blur-md rounded-[2.5rem] border border-border/50 p-2 shadow-xl shadow-black/5 overflow-hidden">
-            <DeploymentHistory history={history} />
+            <DeploymentHistory history={history} repoUrl={selectedProject?.repoUrl} />
           </div>
         </div>
       </div>

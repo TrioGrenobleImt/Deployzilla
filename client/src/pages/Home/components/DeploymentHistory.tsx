@@ -18,6 +18,7 @@ export interface DeploymentRecord {
 
 interface DeploymentHistoryProps {
   history: DeploymentRecord[];
+  repoUrl?: string;
 }
 
 const statusBadge = {
@@ -26,7 +27,7 @@ const statusBadge = {
   rolled_back: "bg-yellow-500/10 text-yellow-500 border-yellow-500/50 hover:bg-yellow-500/20",
 };
 
-export const DeploymentHistory = ({ history }: DeploymentHistoryProps) => {
+export const DeploymentHistory = ({ history, repoUrl }: DeploymentHistoryProps) => {
   const { t } = useTranslation();
 
   return (
@@ -50,7 +51,18 @@ export const DeploymentHistory = ({ history }: DeploymentHistoryProps) => {
                 <TableCell className="font-mono text-xs">
                   <div className="flex items-center gap-1 text-accent">
                     <GitBranch className="w-3 h-3" />
-                    {record.commitHash}
+                    {repoUrl && record.trigger === "github" && record.commitHash !== "---" ? (
+                      <a
+                        href={`${repoUrl.replace(/\.git$/, "")}/commit/${record.commitHash}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline decoration-accent/30 underline-offset-4"
+                      >
+                        {record.commitHash.substring(0, 7)}
+                      </a>
+                    ) : (
+                      record.commitHash.substring(0, 7)
+                    )}
                   </div>
                 </TableCell>
                 <TableCell className="capitalize text-xs text-muted-foreground">{t(`pages.project.triggers.${record.trigger}`)}</TableCell>
