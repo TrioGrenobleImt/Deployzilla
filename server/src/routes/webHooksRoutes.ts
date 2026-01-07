@@ -1,5 +1,5 @@
 import express, { Router } from "express";
-import { handleGitHubWebhook, handleManualTrigger } from "../controllers/githubActionsController.js";
+import { handleGitHubWebhook, handleManualTrigger } from "../controllers/webhooksController.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 
 export const webhookRooter: Router = express.Router();

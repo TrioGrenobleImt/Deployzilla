@@ -73,7 +73,18 @@ export const DeploymentHistory = ({ history }: DeploymentHistoryProps) => {
                 <TableCell className="text-xs">
                   <div className="flex items-center gap-1">
                     <User className="w-3 h-3 text-muted-foreground" />
-                    {record.deployedBy}
+                    {record.trigger === "github" && record.deployedBy !== "System" ? (
+                      <a
+                        href={`https://github.com/${record.deployedBy}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-accent hover:underline decoration-accent/30 underline-offset-4"
+                      >
+                        {record.deployedBy}
+                      </a>
+                    ) : (
+                      record.deployedBy
+                    )}
                   </div>
                 </TableCell>
                 <TableCell className="text-right text-xs text-muted-foreground">{record.timestamp}</TableCell>

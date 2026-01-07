@@ -48,8 +48,8 @@ export const handleGitHubWebhook: RequestHandler = async (req: Request, res: Res
 
     const branch = ref.replace("refs/heads/", "");
     const repoUrl = repository.clone_url;
-    const commitHash = rawPayload.after;
-    const author = rawPayload.pusher?.name;
+    const commitHash = rawPayload.head_commit?.id || rawPayload.after;
+    const author = rawPayload.head_commit?.committer?.username || rawPayload.head_commit?.committer?.name || rawPayload.pusher?.name;
 
     const project = await Project.findOne({ repoUrl });
 
