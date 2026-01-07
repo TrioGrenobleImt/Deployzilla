@@ -53,7 +53,10 @@ export const DeploymentHistory = ({ history, repoUrl }: DeploymentHistoryProps) 
                     <GitBranch className="w-3 h-3" />
                     {repoUrl && record.trigger === "github" && record.commitHash !== "---" ? (
                       <a
-                        href={`${repoUrl.replace(/\.git$/, "")}/commit/${record.commitHash}`}
+                        href={`${repoUrl
+                          .replace(/\.git$/, "")
+                          .replace(/^git@([^:]+):/, "https://$1/")
+                          .replace(/^ssh:\/\/git@([^/]+)\//, "https://$1/")}/commit/${record.commitHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="hover:underline decoration-accent/30 underline-offset-4"

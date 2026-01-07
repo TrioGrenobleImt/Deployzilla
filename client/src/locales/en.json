@@ -345,6 +345,7 @@
         "form": {
           "name": "Project Name",
           "name_placeholder": "My Awesome Project",
+          "invalid_url": "Invalid repository URL (HTTPS or SSH required)",
           "repositoryUrl": "Repository URL",
           "repositoryUrlEdit": "Repository URL (add .git)",
           "branch": "Branch",

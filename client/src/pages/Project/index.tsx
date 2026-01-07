@@ -167,7 +167,7 @@ export const Project = () => {
         projectId: selectedProject._id,
       });
 
-      toast.success(t("pages.home.toasts.deploy_started"));
+      toast.success(t("pages.project.toasts.deploy_started"));
       console.log(response.data.message);
     } catch (error: any) {
       toast.error(error.response?.data?.error);

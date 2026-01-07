@@ -388,6 +388,7 @@
         "form": {
           "name": "Nom du projet",
           "name_placeholder": "Mon super projet",
+          "invalid_url": "URL du dépôt invalide (HTTPS ou SSH requis)",
           "repositoryUrl": "URL du dépôt",
           "repositoryUrlEdit": "URL du dépôt (ajouter .git)",
           "branch": "Branche",

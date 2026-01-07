@@ -24,7 +24,7 @@ export const ProjectForm = ({ dialog, refresh, action, project }: ProjectFormPro
 
   const formSchema = z.object({
     name: z.string().min(2).max(50),
-    repoUrl: z.string().url(),
+    repoUrl: z.string().regex(/^(https?:\/\/|git@|ssh:\/\/).*$/, t("pages.admin.projects_page.form.invalid_url")),
     branch: z.string().min(1).optional(),
     autoDeploy: z.boolean().optional(),
     isPrivate: z.boolean().optional(),
