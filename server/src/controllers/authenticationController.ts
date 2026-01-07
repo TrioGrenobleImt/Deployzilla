@@ -129,6 +129,12 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     const accessToken = generateAccessToken(user._id);
 
+    createLog({
+      message: `User ${user.username} logged in successfully`,
+      userId: user._id,
+      level: logLevels.INFO,
+    });
+
     const { password: _password, ...userWithoutPassword } = user.toObject();
 
     res.status(201).json({ user: userWithoutPassword, message: "server.auth.messages.login_success", accessToken });
@@ -177,6 +183,12 @@ export const signInWithGoogle = async (req: Request, res: Response): Promise<voi
     }
 
     const accessToken = generateAccessToken(user._id);
+
+    createLog({
+      message: `User ${user.username} logged in via Google successfully`,
+      userId: user._id,
+      level: logLevels.INFO,
+    });
 
     res.status(201).json({ user, message: "server.auth.messages.login_success", accessToken });
   } catch (err: any) {

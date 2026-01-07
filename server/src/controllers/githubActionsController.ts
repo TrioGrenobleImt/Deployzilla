@@ -2,6 +2,8 @@ import { Request, Response, RequestHandler } from "express";
 // import { verifyGitHubSignature } from "../utils/cryptoUtils.js";
 import { Project } from "../models/projectModel.js";
 import { User } from "../models/userModel.js";
+import { createLog } from "./logController.js";
+import { logLevels } from "../utils/enums/logLevels.js";
 
 /**
  * Triggers the pipeline runner via cURL
@@ -54,6 +56,13 @@ export const handleGitHubWebhook: RequestHandler = async (req: Request, res: Res
     if (project && project.autoDeploy && project.branch === branch) {
       try {
         const stdout = await triggerPipeline(project.id, commitHash, author);
+
+        createLog({
+          message: `Pipeline triggered via GitHub Webhook for project ${project.name} (Commit: ${commitHash?.substring(0, 7)})`,
+          userId: undefined as any,
+          level: logLevels.INFO,
+        });
+
         res.status(200).send({ message: stdout });
         return;
       } catch (err: any) {
@@ -92,6 +101,13 @@ export const handleManualTrigger: RequestHandler = async (req: Request, res: Res
     const author = user ? `${user.forename} ${user.name}` : "Unknown";
 
     const stdout = await triggerPipeline(project.id, undefined, author);
+
+    createLog({
+      message: `User ${author} manually triggered pipeline for project ${project.name}`,
+      userId: req.userId as any,
+      level: logLevels.INFO,
+    });
+
     res.status(200).json({ message: stdout });
   } catch (err: any) {
     res.status(500).json({ error: err.message });

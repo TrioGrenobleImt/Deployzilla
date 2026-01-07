@@ -2,6 +2,8 @@ import { Request, Response, RequestHandler } from "express";
 import { Project } from "../models/projectModel.js";
 import { encrypt, decrypt } from "../utils/cryptoUtils.js";
 import crypto from "crypto";
+import { createLog } from "./logController.js";
+import { logLevels } from "../utils/enums/logLevels.js";
 
 /**
  * Creates a new project.
@@ -49,6 +51,13 @@ export const createProject: RequestHandler = async (req: Request, res: Response)
     });
 
     await project.save();
+
+    createLog({
+      message: `Project ${project.name} created successfully`,
+      userId: req.userId as any,
+      level: logLevels.INFO,
+    });
+
     res.status(201).json(project);
   } catch (error) {
     console.error("Error creating project:", error);
@@ -133,6 +142,12 @@ export const updateProject: RequestHandler = async (req: Request, res: Response)
       return;
     }
 
+    createLog({
+      message: `Project ${project.name} updated successfully`,
+      userId: req.userId as any,
+      level: logLevels.INFO,
+    });
+
     res.status(200).json(project);
   } catch (error) {
     console.error("Error updating project:", error);
@@ -152,6 +167,12 @@ export const deleteProject: RequestHandler = async (req: Request, res: Response)
       res.status(404).json({ error: "Project not found" });
       return;
     }
+
+    createLog({
+      message: `Project ${project.name} deleted successfully`,
+      userId: req.userId as any,
+      level: logLevels.INFO,
+    });
 
     res.status(200).json({ message: "Project deleted successfully" });
   } catch (error) {
