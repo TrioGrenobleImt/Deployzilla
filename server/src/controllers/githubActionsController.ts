@@ -5,10 +5,10 @@ import { Project } from "../models/projectModel.js";
 /**
  * Triggers the pipeline runner via cURL
  */
-const triggerPipeline = async (repoUrl: string, branch: string): Promise<string> => {
+const triggerPipeline = async (projectId: string): Promise<string> => {
   const runnerUrl = process.env.PIPELINE_RUNNER_URL;
 
-  const payload = JSON.stringify({ repoUrl, branch });
+  const payload = JSON.stringify({ projectId });
   const curlCommand = `curl -X POST "${runnerUrl}" -H "Content-Type: application/json" -d '${payload}'`;
 
   const { stdout, stderr } = await new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
@@ -50,12 +50,11 @@ export const handleGitHubWebhook: RequestHandler = async (req: Request, res: Res
 
     if (project && project.autoDeploy && project.branch === branch) {
       try {
-        const stdout = await triggerPipeline(repoUrl, branch);
-        res.status(200).send({ message: "Pipeline triggered via webhook", details: stdout });
+        const stdout = await triggerPipeline(project.id);
+        res.status(200).send({ message: stdout });
         return;
       } catch (err: any) {
-        const detail = err.stderr || err.message || String(err);
-        res.status(500).send({ error: "Internal Server Error", details: detail });
+        res.status(500).send({ error: err.message });
         return;
       }
     }
@@ -86,11 +85,9 @@ export const handleManualTrigger: RequestHandler = async (req: Request, res: Res
       return;
     }
 
-    const stdout = await triggerPipeline(project.repoUrl, project.branch);
-    res.status(200).json({ message: "Pipeline manually triggered", details: stdout });
+    const stdout = await triggerPipeline(project.id);
+    res.status(200).json({ message: stdout });
   } catch (err: any) {
-    const detail = err.stderr || err.message || String(err);
-    console.error("Manual trigger error:", detail);
-    res.status(500).json({ error: "Failed to trigger pipeline", details: detail });
+    res.status(500).json({ error: err.message });
   }
 };

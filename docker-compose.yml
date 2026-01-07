@@ -1,11 +1,4 @@
 services:
-  db:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
-
   server:
     build:
       context: ./server
@@ -14,16 +7,16 @@ services:
       - "3001:3000"
     environment:
       - PORT=3000
-      - MONG_URI=mongodb://db:27017/Deployzilla
-      - MONG_URI_TEST=mongodb://db:27017/Deployzilla-test
+      - MONG_URI=mongodb://host.docker.internal:27017/deployzilla
+      - MONG_URI_TEST=mongodb://host.docker.internal:27017/deployzilla-test
+      - REDIS_URI=redis://host.docker.internal:6379
+      - REDIS_PASSWORD=admin
       - SECRET_ACCESS_TOKEN=secret
-      - ENCRYPTION_KEY=key
+      - ENCRYPTION_KEY=a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5
       - CORS_ORIGIN=http://localhost:5174
       - PIPELINE_RUNNER_URL=http://host.docker.internal:8081/api/v1/pipelines/start
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    depends_on:
-      - db
     volumes:
       - ./server:/app
       - /app/node_modules

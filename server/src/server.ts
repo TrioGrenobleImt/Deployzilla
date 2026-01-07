@@ -16,6 +16,11 @@ export function initServer() {
   // Initialize WebSocket connections
   initSockets(httpServer);
 
+  // Initialize Redis subscriber for pipeline events
+  import("./sockets/redisSubscriber.js").then(({ initRedisSubscriber }) => {
+    initRedisSubscriber();
+  });
+
   // Ensure the PORT environment variable is defined
   if (!process.env.PORT) {
     console.error("Please specify the port number for the HTTP server with the environment variable PORT in the .env file.");

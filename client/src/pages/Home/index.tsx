@@ -107,10 +107,9 @@ export const Home = () => {
       });
 
       toast.success(t("pages.home.toasts.deploy_started"));
-      console.log("Deployment triggered:", response.data);
+      console.log(response.data.message);
     } catch (error: any) {
-      console.error("Failed to trigger deployment:", error);
-      toast.error(error.response?.data?.details || t("pages.home.toasts.deploy_failed"));
+      toast.error(error.response?.data?.error);
       setIsDeploying(false);
     }
   };
