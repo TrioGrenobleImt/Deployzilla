@@ -42,14 +42,57 @@ export const Project = () => {
 
     socket.on("pipeline-log", (log: LogEntry) => {
       setLogs((prev) => [...prev, log]);
+
+      // Heureustics to update stages based on log message
+      const msg = log.message.toLowerCase();
+      let currentStageId = "";
+
+      if (msg.includes("cloning") || msg.includes("checkout") || msg.includes("fetching repo")) {
+        currentStageId = "1"; // Source
+      } else if (msg.includes("install") || msg.includes("building") || msg.includes("compiling")) {
+        currentStageId = "2"; // Build
+      } else if (msg.includes("test") || msg.includes("vitest") || msg.includes("jest")) {
+        currentStageId = "3"; // Tests
+      } else if (msg.includes("docker") || msg.includes("building image") || msg.includes("pushing to registry")) {
+        currentStageId = "4"; // Docker
+      } else if (msg.includes("deploying") || msg.includes("updating service") || msg.includes("restarting")) {
+        currentStageId = "5"; // Deploy
+      }
+
+      if (currentStageId) {
+        setStages((prev) =>
+          prev.map((stage) => {
+            const stageNum = parseInt(stage.id);
+            const currentNum = parseInt(currentStageId);
+
+            if (stageNum < currentNum && stage.status !== "success") {
+              return { ...stage, status: "success" };
+            }
+            if (stageNum === currentNum) {
+              return { ...stage, status: "running" };
+            }
+            return stage;
+          }),
+        );
+      }
     });
 
     socket.on("pipeline-status", ({ stageId, status }: { stageId: string; status: PipelineStage["status"] }) => {
       setStages((prev) => prev.map((stage) => (stage.id === stageId ? { ...stage, status } : stage)));
     });
 
-    socket.on("pipeline-completed", () => {
+    socket.on("pipeline-completed", ({ success }: { success: boolean }) => {
       setIsDeploying(false);
+      setStages((prev) =>
+        prev.map((stage) => {
+          if (success) {
+            return { ...stage, status: "success" };
+          } else {
+            // If failed, the currently running stage should be marked as failed
+            return stage.status === "running" ? { ...stage, status: "failed" } : stage;
+          }
+        }),
+      );
     });
 
     return () => {
@@ -99,7 +142,7 @@ export const Project = () => {
     try {
       setIsDeploying(true);
       setLogs([]);
-      setStages(initialStages);
+      setStages(initialStages.map((s, i) => (i === 0 ? { ...s, status: "running" } : s)));
 
       const response = await axiosConfig.post("/webhooks/trigger", {
         projectId: selectedProject._id,
