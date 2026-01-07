@@ -31,10 +31,9 @@ export const Project = () => {
     { id: "1", name: "Clone", status: "pending", icon: Zap },
     { id: "2", name: "Eslint", status: "pending", icon: Search },
     { id: "3", name: "Sonar", status: "pending", icon: Eye },
-    { id: "4", name: "Kubernetes", status: "pending", icon: Boxes },
-    { id: "5", name: "Docker", status: "pending", icon: Container },
-    { id: "6", name: "Déploiement", status: "pending", icon: Rocket },
-    { id: "7", name: "Tests Intrusions", status: "pending", icon: ShieldAlert },
+    { id: "4", name: "Build", status: "pending", icon: Container },
+    { id: "5", name: "Déploiement", status: "pending", icon: Rocket },
+    { id: "6", name: "Tests Intrusions", status: "pending", icon: ShieldAlert },
   ];
 
   const [stages, setStages] = useState<PipelineStage[]>(initialStages);
@@ -78,7 +77,7 @@ export const Project = () => {
           timestamp: new Date(startTime).toLocaleString(),
         };
       });
-      setHistory(mappedHistory.reverse());
+      setHistory(mappedHistory);
     } catch (error) {
       console.error("Error fetching history:", error);
     }
@@ -107,19 +106,24 @@ export const Project = () => {
         currentStageId = "2";
       } else if (msg.includes("step [sonar] starting") || msg.includes("sonar") || msg.includes("analysis")) {
         currentStageId = "3";
-      } else if (msg.includes("step [kubernetes] starting") || msg.includes("k8s") || msg.includes("kubectl")) {
+      } else if (
+        msg.includes("step [kubernetes] starting") ||
+        msg.includes("k8s") ||
+        msg.includes("kubectl") ||
+        msg.includes("step [docker-build] starting") ||
+        msg.includes("building docker image") ||
+        msg.includes("docker build")
+      ) {
         currentStageId = "4";
-      } else if (msg.includes("step [docker-build] starting") || msg.includes("building docker image") || msg.includes("docker build")) {
-        currentStageId = "5";
       } else if (msg.includes("step [deploy] starting") || msg.includes("deploying") || msg.includes("deployment")) {
-        currentStageId = "6";
+        currentStageId = "5";
       } else if (
         msg.includes("step [intrusion-tests] starting") ||
         msg.includes("security") ||
         msg.includes("zap") ||
         msg.includes("penetration")
       ) {
-        currentStageId = "7";
+        currentStageId = "6";
       }
 
       // Detection of "Finished" markers
@@ -132,10 +136,9 @@ export const Project = () => {
         if (stepName === "git-clone") finishedStageId = "1";
         else if (stepName === "eslint") finishedStageId = "2";
         else if (stepName === "sonar") finishedStageId = "3";
-        else if (stepName === "kubernetes-prep") finishedStageId = "4";
-        else if (stepName === "docker-build") finishedStageId = "5";
-        else if (stepName === "deploy") finishedStageId = "6";
-        else if (stepName === "intrusion-tests") finishedStageId = "7";
+        else if (stepName === "kubernetes-prep" || stepName === "docker-build") finishedStageId = "4";
+        else if (stepName === "deploy") finishedStageId = "5";
+        else if (stepName === "intrusion-tests") finishedStageId = "6";
 
         if (finishedStageId) {
           setStages((prev) => {

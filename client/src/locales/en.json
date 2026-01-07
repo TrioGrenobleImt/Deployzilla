@@ -52,8 +52,7 @@
           "clone": "Clone",
           "eslint": "ESLint",
           "sonar": "SonarQube",
-          "kubernetes": "Kubernetes",
-          "docker": "Docker",
+          "build": "Build",
           "déploiement": "Deployment",
           "tests intrusions": "Intrusion Tests"
         },
