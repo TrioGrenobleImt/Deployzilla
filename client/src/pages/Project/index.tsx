@@ -4,7 +4,7 @@ import { PipelineTimeline, PipelineStage } from "../Home/components/PipelineTime
 import { PipelineLogs, LogEntry } from "../Home/components/PipelineLogs";
 import { DeploymentControls } from "../Home/components/DeploymentControls";
 import { DeploymentHistory, DeploymentRecord } from "../Home/components/DeploymentHistory";
-import { Zap, Activity, Shield, Terminal, ArrowLeft, Search, Eye, Boxes, Container, Rocket, ShieldAlert } from "lucide-react";
+import { Zap, Activity, Shield, Terminal, ArrowLeft, Search, Eye, Boxes, Container, Rocket, ShieldAlert, Github } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuthContext } from "@/contexts/authContext";
 import { useSocketContext } from "@/contexts/socketContext";
@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { axiosConfig } from "@/config/axiosConfig";
+import { cn } from "@/lib/utils";
 
 export const Project = () => {
   const { t } = useTranslation();
@@ -251,6 +252,12 @@ export const Project = () => {
         : "---",
     totalDeployments: history.length,
     failedDeploys: history.filter((h) => h.status === "failed").length,
+    weeklyDeployments: history.filter((h) => {
+      const deployDate = new Date(h.timestamp);
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      return deployDate >= sevenDaysAgo;
+    }).length,
   };
 
   if (loading) {
@@ -277,23 +284,45 @@ export const Project = () => {
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 blur-[100px] rounded-full -z-10 -translate-x-1/2 translate-y-1/2" />
 
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border/50 pb-8 relative z-10">
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" className="mr-2" onClick={() => navigate("/")}>
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <div className="p-2 bg-accent rounded-xl shadow-lg shadow-accent/20">
-              <Zap className="w-6 h-6 text-accent-foreground fill-accent-foreground" />
+        <div className="flex items-center gap-6">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:bg-accent/10 hover:text-accent transition-all active:scale-95 rounded-xl h-12 w-12"
+            onClick={() => navigate("/")}
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </Button>
+
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-accent rounded-2xl shadow-lg shadow-accent/20">
+              <Zap className="w-8 h-8 text-accent-foreground fill-accent-foreground" />
             </div>
-            <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground">{selectedProject?.name}</h1>
+            <div className="space-y-0.5">
+              <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground flex items-center gap-3">
+                {selectedProject?.name}
+                <a
+                  href={selectedProject.repoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-1.5 hover:bg-muted rounded-lg transition-colors group"
+                  title="View on GitHub"
+                >
+                  <Github className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-all" />
+                </a>
+              </h1>
+              <p className="text-muted-foreground text-xs font-mono opacity-60 truncate max-w-[300px]">{selectedProject.repoUrl}</p>
+            </div>
           </div>
-          <p className="text-muted-foreground text-sm font-medium pl-11">{selectedProject.repoUrl}</p>
         </div>
 
         <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground bg-muted/50 px-4 py-2.5 rounded-full border border-border/50 shadow-sm backdrop-blur-sm">
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-            {t("pages.home.active_commit")}: <span className="text-accent underline underline-offset-4 decoration-2">7f3a21b</span>
+            {t("pages.home.active_commit")}:{" "}
+            <span className="text-accent underline underline-offset-4 decoration-2">
+              {history.find((h) => h.status === "success")?.commitHash.substring(0, 7) || "---"}
+            </span>
           </span>
           <span className="text-zinc-300 dark:text-zinc-800 font-normal">|</span>
           <span className="flex items-center gap-1.5">
@@ -331,7 +360,7 @@ export const Project = () => {
               <h2 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">{t("pages.home.system_health.title")}</h2>
             </div>
             <Card className="bg-background/60 dark:bg-zinc-900/40 backdrop-blur-md rounded-[2.5rem] border-border/50 shadow-xl shadow-black/5 border-none h-full">
-              <CardContent className="p-10 flex flex-col md:flex-row gap-8 justify-between items-center h-full">
+              <CardContent className="p-10 flex flex-col md:flex-row gap-12 justify-center items-center h-full">
                 <div className="flex items-center gap-6">
                   <div className="p-4 bg-green-500/10 rounded-[2rem]">
                     <Activity className="w-8 h-8 text-green-500" />
@@ -360,16 +389,15 @@ export const Project = () => {
 
                 <div className="hidden md:block w-px h-12 bg-border/50" />
 
-                <div className="flex-1 max-w-[200px] w-full space-y-3">
-                  <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                    <span>{t("pages.home.system_health.stability_index")}</span>
-                    <span className="text-accent">{Math.max(0, 100 - stats.failedDeploys * 5)}%</span>
+                <div className="flex items-center gap-6">
+                  <div className="p-4 bg-blue-500/10 rounded-[2rem]">
+                    <Zap className="w-8 h-8 text-blue-500" />
                   </div>
-                  <div className="w-full bg-muted h-3 rounded-full overflow-hidden p-0.5">
-                    <div
-                      className="bg-accent h-full rounded-full animate-pulse shadow-[0_0_15px_rgba(var(--accent),0.5)] transition-all duration-1000"
-                      style={{ width: `${Math.max(10, 100 - stats.failedDeploys * 5)}%` }}
-                    />
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                      {t("pages.home.system_health.total_deployments")}
+                    </p>
+                    <p className="text-3xl font-black font-mono text-blue-500">{stats.totalDeployments}</p>
                   </div>
                 </div>
               </CardContent>

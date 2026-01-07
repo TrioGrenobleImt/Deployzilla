@@ -33,7 +33,8 @@
         "resp_time": "Avg. Response Time",
         "success_rate": "Success Rate",
         "avg_duration": "Avg. Deployment Time",
-        "stability_index": "Stability Index"
+        "total_deployments": "Total Deployments",
+        "deployments_this_week": "Deployments This Week"
       },
       "empty_state": {
         "admin": {

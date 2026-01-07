@@ -39,7 +39,8 @@
         "resp_time": "Temps de rép. moyen",
         "success_rate": "Taux de succès",
         "avg_duration": "Durée moyenne",
-        "stability_index": "Indice de stabilité"
+        "total_deployments": "Total des déploiements",
+        "deployments_this_week": "Déploiements cette semaine"
       },
       "empty_state": {
         "admin": {
