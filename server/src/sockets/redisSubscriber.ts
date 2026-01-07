@@ -58,6 +58,13 @@ export function initRedisSubscriber() {
         if (event) {
           console.log("Processing log event:", event.type);
           if (event.type === "log") {
+            // Save log to MongoDB
+            const logData = event.data;
+            if (logData.pipelineId) {
+              await Pipeline.findByIdAndUpdate(logData.pipelineId, {
+                $push: { logs: logData },
+              });
+            }
             io?.emit("pipeline-log", event.data);
           }
         }
@@ -87,12 +94,12 @@ export function initRedisSubscriber() {
                 }
               } else {
                 // Handle single job name format: pipelineId|status|jobName
-                jobs = [{ name: rawJobs, status: parts[1] }];
+                jobs = [{ name: rawJobs.trim(), status: parts[1].trim() }];
               }
             }
             payload = {
-              pipelineId: parts[0],
-              status: parts[1],
+              pipelineId: parts[0].trim(),
+              status: parts[1].trim(),
               jobs: jobs,
             };
           }
@@ -105,52 +112,93 @@ export function initRedisSubscriber() {
 
         const { pipelineId, status, jobs } = payload;
 
-        // Update MongoDB
-        const updatedPipeline = await Pipeline.findByIdAndUpdate(pipelineId, { status, jobs }, { new: true });
+        // Get the current job name (from the third part of the message)
+        const currentJobName = jobs && jobs.length > 0 ? jobs[0].name : null;
 
-        if (updatedPipeline) {
-          console.log(`Updated pipeline ${pipelineId} to status ${status}`);
+        // Get projectId from the existing pipeline
+        const existingPipeline = await Pipeline.findById(pipelineId);
+        const projectId = existingPipeline?.projectId;
+        const wasRunning = existingPipeline?.status === "RUNNING";
 
-          // Broadcast update for history/stats refresh
-          io?.emit("pipeline-updated", {
-            projectId: updatedPipeline.projectId,
-            pipelineId: updatedPipeline._id,
-            status: updatedPipeline.status,
+        // Update status and currentStage in MongoDB
+        if (existingPipeline) {
+          const updateData: any = { status };
+          if (currentJobName) {
+            updateData.currentStage = currentJobName;
+          }
+          await Pipeline.findByIdAndUpdate(pipelineId, updateData);
+          console.log(`Updated pipeline ${pipelineId} to status ${status}, currentStage: ${currentJobName}`);
+        }
+
+        // Emit pipeline-started when first transitioning to RUNNING
+        if (status === "RUNNING" && !wasRunning && projectId) {
+          const pipeline = await Pipeline.findById(pipelineId);
+          io?.emit("pipeline-started", {
+            projectId,
+            pipelineId,
+            pipeline: {
+              _id: pipeline?._id,
+              commitHash: pipeline?.commitHash,
+              author: pipeline?.author,
+              createdAt: pipeline?.createdAt,
+            },
           });
+        }
 
-          // Broadcast status change to frontend for timeline
-          if (jobs && Array.isArray(jobs)) {
-            const runningJob = jobs.find((j) => j.status === "RUNNING");
-            if (runningJob) {
-              const stageMap: { [key: string]: string } = {
-                "git-clone": "1",
-                CLONE: "1",
-                eslint: "2",
-                ESLINT: "2",
-                sonar: "3",
-                SONAR: "3",
-                "docker-build": "4",
-                BUILD: "4",
-                "kubernetes-prep": "4",
-                deploy: "5",
-                DEPLOY: "5",
-                "intrusion-tests": "6",
-              };
-              const stageId = stageMap[runningJob.name] || stageMap[runningJob.name.toUpperCase()];
-              if (stageId) {
-                io?.emit("pipeline-status", { stageId, status: "running", projectId: updatedPipeline.projectId });
-              }
+        // Broadcast status change to frontend for timeline (from Redis data)
+        if (jobs && Array.isArray(jobs)) {
+          const runningJob = jobs.find((j) => j.status === "RUNNING");
+          if (runningJob) {
+            const stageMap: { [key: string]: string } = {
+              // Stage 1: Clone
+              "git-clone": "1",
+              "GIT-CLONE": "1",
+              CLONE: "1",
+              // Stage 2: Dépendances
+              "npm-install": "2",
+              "NPM-INSTALL": "2",
+              DEPENDENCIES: "2",
+              // Stage 3: Eslint
+              eslint: "3",
+              ESLINT: "3",
+              "npm-lint": "3",
+              "NPM-LINT": "3",
+              // Stage 4: Tests unitaires
+              "unit-tests": "4",
+              "UNIT-TESTS": "4",
+              TESTS: "4",
+              "npm-test": "4",
+              "NPM-TEST": "4",
+              // Stage 5: Build
+              "docker-build": "5",
+              "DOCKER-BUILD": "5",
+              BUILD: "5",
+              // Stage 6: Déploiement
+              deploy: "6",
+              DEPLOY: "6",
+              "kubernetes-prep": "6",
+              "KUBERNETES-PREP": "6",
+              // Stage 7: Tests Intrusions
+              "intrusion-tests": "7",
+              "INTRUSION-TESTS": "7",
+              INTRUSION: "7",
+            };
+            const stageId = stageMap[runningJob.name] || stageMap[runningJob.name.toUpperCase()];
+            if (stageId && projectId) {
+              io?.emit("pipeline-status", { stageId, status: "running", projectId });
             }
           }
+        }
 
-          // Broadcast completion
-          if (status === "SUCCESS" || status === "FAILED") {
-            io?.emit("pipeline-completed", {
-              success: status === "SUCCESS",
-              pipelineId,
-              projectId: updatedPipeline.projectId,
-            });
-          }
+        // Broadcast completion with full pipeline data from DB
+        if ((status === "SUCCESS" || status === "FAILED") && projectId) {
+          const completedPipeline = await Pipeline.findById(pipelineId);
+          io?.emit("pipeline-completed", {
+            success: status === "SUCCESS",
+            pipelineId,
+            projectId,
+            pipeline: completedPipeline,
+          });
         }
       }
     } catch (error) {

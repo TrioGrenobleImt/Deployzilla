@@ -43,7 +43,7 @@ export const PipelineLogs = ({ logs }: PipelineLogsProps) => {
   };
 
   return (
-    <Card className="flex flex-col h-[400px] bg-transparent border-none font-mono shadow-none">
+    <Card className="flex flex-col h-[600px] bg-transparent border-none font-mono shadow-none">
       <CardHeader className="flex flex-row items-center justify-between p-4 border-b border-border/50 backdrop-blur-sm">
         <div className="flex items-center gap-2">
           <Terminal className="w-4 h-4 text-muted-foreground" />

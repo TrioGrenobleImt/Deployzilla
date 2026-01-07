@@ -56,11 +56,12 @@
       "pipeline": {
         "stages": {
           "clone": "Clone",
+          "dépendances": "Dépendances",
           "eslint": "ESLint",
-          "sonar": "SonarQube",
+          "tests_unitaires": "Tests unitaires",
           "build": "Build",
           "déploiement": "Déploiement",
-          "tests intrusions": "Tests Intrusions"
+          "tests_intrusions": "Tests Intrusions"
         },
         "logs": {
           "title": "Journaux de pipeline",
@@ -89,13 +90,15 @@
         "statuses": {
           "success": "Succès",
           "failed": "Échec",
-          "pending": "En attente"
+          "pending": "En attente",
+          "running": "En cours"
         },
         "pagination": {
           "previous": "Précédent",
           "next": "Suivant",
           "page": "Affichage de {{start}} à {{end}} sur {{totalCount}} résultats"
-        }
+        },
+        "no_pipelines": "Aucun pipeline n'a encore été exécuté pour ce projet."
       },
       "auto_deploy": "Déploiement auto",
       "updated_recently": "Mis à jour récemment",

@@ -50,11 +50,12 @@
       "pipeline": {
         "stages": {
           "clone": "Clone",
+          "dépendances": "Dependencies",
           "eslint": "ESLint",
-          "sonar": "SonarQube",
+          "tests_unitaires": "Unit Tests",
           "build": "Build",
           "déploiement": "Deployment",
-          "tests intrusions": "Intrusion Tests"
+          "tests_intrusions": "Intrusion Tests"
         },
         "logs": { "title": "Pipeline Logs", "filter_placeholder": "Filter logs...", "no_logs": "No logs matching your filter" }
       },
@@ -79,13 +80,15 @@
         "statuses": {
           "success": "Success",
           "failed": "Failed",
-          "pending": "Pending"
+          "pending": "Pending",
+          "running": "Running"
         },
         "pagination": {
           "previous": "Previous",
           "next": "Next",
           "page": "Showing {{start}} to {{end}} of {{totalCount}} results"
-        }
+        },
+        "no_pipelines": "No pipelines have been run for this project yet."
       },
       "auto_deploy": "Auto-Deploy",
       "updated_recently": "Updated recently",

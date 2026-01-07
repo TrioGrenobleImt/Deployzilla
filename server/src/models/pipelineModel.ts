@@ -5,6 +5,8 @@ export interface IPipeline extends Document {
   projectId: string;
   status: "PENDING" | "RUNNING" | "SUCCESS" | "FAILED";
   jobs: any[];
+  logs: any[];
+  currentStage?: string;
   commitHash?: string;
   author?: string;
   createdAt: Date;
@@ -17,6 +19,8 @@ const PipelineSchema = new Schema<IPipeline>(
     projectId: { type: String, required: true },
     status: { type: String, default: "PENDING" },
     jobs: { type: Schema.Types.Mixed, default: [] },
+    logs: { type: Schema.Types.Mixed, default: [] },
+    currentStage: { type: String },
     commitHash: { type: String },
     author: { type: String },
   },
