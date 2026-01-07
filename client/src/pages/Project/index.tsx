@@ -127,7 +127,9 @@ export const Project = () => {
 
         // Restore logs from the pipeline
         if (runningPipeline.logs && Array.isArray(runningPipeline.logs)) {
-          setLogs(runningPipeline.logs);
+          // Deduplicate logs from DB
+          const uniqueLogs = Array.from(new Map(runningPipeline.logs.map((l: any) => [l.id, l])).values()) as LogEntry[];
+          setLogs(uniqueLogs);
         }
       }
     } catch (error) {
@@ -216,7 +218,10 @@ export const Project = () => {
 
     socket.on("pipeline-log", (log: LogEntry) => {
       // Only add logs - stage transitions come from pipeline-status via Redis
-      setLogs((prev) => [...prev, log]);
+      setLogs((prev) => {
+        if (prev.some((l) => l.id === log.id)) return prev;
+        return [...prev, log];
+      });
     });
 
     socket.on(
