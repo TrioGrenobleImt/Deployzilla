@@ -1,5 +1,6 @@
 import { redisSubscriberClient } from "../utils/redisClient.js";
 import { io } from "./socket.js";
+import { Pipeline } from "../models/pipelineModel.js";
 
 /**
  * Listens for pipeline events from Redis and broadcasts them via Socket.IO.
@@ -11,18 +12,18 @@ import { io } from "./socket.js";
  * }
  */
 export function initRedisSubscriber() {
-  redisSubscriberClient.subscribe("pipeline-logs", (err, count) => {
+  redisSubscriberClient.subscribe("pipeline-logs", "pipeline-status", (err, count) => {
     if (err) {
-      console.error("Failed to subscribe to Redis channel:", err.message);
+      console.error("Failed to subscribe to Redis channels:", err.message);
       return;
     }
-    console.log(`Subscribed to ${count} Redis channels. Listening for pipeline-logs...`);
+    console.log(`Subscribed to ${count} Redis channels. Listening for pipeline-logs and pipeline-status...`);
   });
 
   redisSubscriberClient.on("message", async (channel, message) => {
-    if (channel === "pipeline-logs") {
-      console.log("Raw Redis message received:", message);
-      try {
+    try {
+      if (channel === "pipeline-logs") {
+        console.log("Raw Redis log received:", message);
         let event;
 
         // Try to parse as JSON first
@@ -30,7 +31,7 @@ export function initRedisSubscriber() {
           try {
             event = JSON.parse(message);
           } catch (e) {
-            console.warn("Message started with { but failed to parse as JSON:", e.message);
+            console.warn("Log message started with { but failed to parse as JSON:", (e as any).message);
           }
         }
 
@@ -41,9 +42,6 @@ export function initRedisSubscriber() {
             const pipelineId = message.substring(0, pipeIndex);
             const content = message.substring(pipeIndex + 1);
 
-            // Mapping raw messages to frontend events
-            // Heuristic: If it looks like a stage status update, we could handle it.
-            // For now, treat everything as a log.
             event = {
               type: "log",
               data: {
@@ -54,34 +52,109 @@ export function initRedisSubscriber() {
                 pipelineId: pipelineId,
               },
             };
-
-            // Simple heuristic for "completed" or "failed" to update UI status
-            if (content.includes("Pipeline Successful") || content.includes("Deployment successful")) {
-              io?.emit("pipeline-completed", { success: true, pipelineId });
-            } else if (content.includes("Pipeline Failed") || content.includes("failed")) {
-              io?.emit("pipeline-completed", { success: false, pipelineId });
-            }
           }
         }
 
-        if (!event) {
-          console.warn("Could not parse Redis message:", message);
+        if (event) {
+          console.log("Processing log event:", event.type);
+          if (event.type === "log") {
+            io?.emit("pipeline-log", event.data);
+          }
+        }
+      } else if (channel === "pipeline-status") {
+        console.log("Raw Redis status received:", message);
+        let payload;
+
+        if (message.startsWith("{")) {
+          try {
+            payload = JSON.parse(message);
+          } catch (e: any) {
+            console.warn("Status message started with { but failed to parse as JSON:", e.message);
+          }
+        }
+
+        if (!payload) {
+          const parts = message.split("|");
+          if (parts.length >= 2) {
+            let jobs: any[] = [];
+            const rawJobs = parts[2];
+            if (rawJobs) {
+              if (rawJobs.startsWith("[")) {
+                try {
+                  jobs = JSON.parse(rawJobs);
+                } catch (e) {
+                  console.warn("Failed to parse jobs JSON array from status message:", rawJobs);
+                }
+              } else {
+                // Handle single job name format: pipelineId|status|jobName
+                jobs = [{ name: rawJobs, status: parts[1] }];
+              }
+            }
+            payload = {
+              pipelineId: parts[0],
+              status: parts[1],
+              jobs: jobs,
+            };
+          }
+        }
+
+        if (!payload || !payload.pipelineId) {
+          console.warn("Could not parse pipeline-status message or missing pipelineId:", message);
           return;
         }
 
-        console.log("Processing event:", event.type);
+        const { pipelineId, status, jobs } = payload;
 
-        // Broadcast to all connected clients
-        if (event.type === "status") {
-          io?.emit("pipeline-status", event.data);
-        } else if (event.type === "log") {
-          io?.emit("pipeline-log", event.data);
-        } else if (event.type === "completed") {
-          io?.emit("pipeline-completed", event.data);
+        // Update MongoDB
+        const updatedPipeline = await Pipeline.findByIdAndUpdate(pipelineId, { status, jobs }, { new: true });
+
+        if (updatedPipeline) {
+          console.log(`Updated pipeline ${pipelineId} to status ${status}`);
+
+          // Broadcast update for history/stats refresh
+          io?.emit("pipeline-updated", {
+            projectId: updatedPipeline.projectId,
+            pipelineId: updatedPipeline._id,
+            status: updatedPipeline.status,
+          });
+
+          // Broadcast status change to frontend for timeline
+          if (jobs && Array.isArray(jobs)) {
+            const runningJob = jobs.find((j) => j.status === "RUNNING");
+            if (runningJob) {
+              const stageMap: { [key: string]: string } = {
+                "git-clone": "1",
+                CLONE: "1",
+                eslint: "2",
+                ESLINT: "2",
+                sonar: "3",
+                SONAR: "3",
+                "docker-build": "4",
+                BUILD: "4",
+                "kubernetes-prep": "4",
+                deploy: "5",
+                DEPLOY: "5",
+                "intrusion-tests": "6",
+              };
+              const stageId = stageMap[runningJob.name] || stageMap[runningJob.name.toUpperCase()];
+              if (stageId) {
+                io?.emit("pipeline-status", { stageId, status: "running", projectId: updatedPipeline.projectId });
+              }
+            }
+          }
+
+          // Broadcast completion
+          if (status === "SUCCESS" || status === "FAILED") {
+            io?.emit("pipeline-completed", {
+              success: status === "SUCCESS",
+              pipelineId,
+              projectId: updatedPipeline.projectId,
+            });
+          }
         }
-      } catch (error) {
-        console.error("Error processing Redis message:", error);
       }
+    } catch (error) {
+      console.error("Error processing Redis message:", error);
     }
   });
 }

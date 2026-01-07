@@ -186,33 +186,48 @@ export const Project = () => {
       }
     });
 
-    socket.on("pipeline-status", ({ stageId, status }: { stageId: string; status: PipelineStage["status"] }) => {
-      setStages((prev) => prev.map((stage) => (stage.id === stageId ? { ...stage, status } : stage)));
+    socket.on(
+      "pipeline-status",
+      ({ stageId, status, projectId }: { stageId: string; status: PipelineStage["status"]; projectId?: string }) => {
+        if (projectId && projectId !== id) return;
+        setStages((prev) => prev.map((stage) => (stage.id === stageId ? { ...stage, status } : stage)));
+      },
+    );
+
+    socket.on("pipeline-updated", ({ projectId }: { projectId: string }) => {
+      if (projectId === id) {
+        fetchHistory();
+      }
     });
 
-    socket.on("pipeline-completed", ({ success }: { success: boolean }) => {
+    socket.on("pipeline-completed", ({ success, projectId }: { success: boolean; projectId?: string }) => {
+      if (projectId && projectId !== id) return;
+
       setIsDeploying(false);
       setStages((prev) =>
         prev.map((stage) => {
           if (success) {
             return { ...stage, status: "success" };
           } else {
-            // If failed, the currently running stage should be marked as failed
             return stage.status === "running" ? { ...stage, status: "failed" } : stage;
           }
         }),
       );
-      fetchHistory(); // Refresh history when completed
+      fetchHistory();
     });
 
-    socket.on("pipeline-started", () => {
-      fetchHistory();
+    socket.on("pipeline-started", ({ projectId }: { projectId: string }) => {
+      if (projectId === id) {
+        fetchHistory();
+      }
     });
 
     return () => {
       socket.off("pipeline-log");
       socket.off("pipeline-status");
+      socket.off("pipeline-updated");
       socket.off("pipeline-completed");
+      socket.off("pipeline-started");
     };
   }, [socket]);
 
