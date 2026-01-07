@@ -31,6 +31,20 @@ export const getColumns = (callback: (action: string, data: any) => void, t: TFu
     cell: ({ row }) => <Badge variant="secondary">{row.getValue("branch")}</Badge>,
   },
   {
+    accessorKey: "isPrivate",
+    header: t("pages.admin.projects_page.form.visibility"),
+    cell: ({ row }) => (
+      <Badge
+        variant={row.getValue("isPrivate") ? "destructive" : "outline"}
+        className={
+          row.getValue("isPrivate") ? "bg-red-500/10 text-red-500 border-red-500/20" : "bg-blue-500/10 text-blue-500 border-blue-500/20"
+        }
+      >
+        {row.getValue("isPrivate") ? t("pages.admin.projects_page.status.private") : t("pages.admin.projects_page.status.public")}
+      </Badge>
+    ),
+  },
+  {
     accessorKey: "autoDeploy",
     header: t("pages.admin.projects_page.form.autoDeploy"),
     cell: ({ row }) => (
@@ -89,14 +103,27 @@ export const getColumns = (callback: (action: string, data: any) => void, t: TFu
               <Copy className="mr-2 h-4 w-4" />
               {t("pages.admin.projects_page.copy_id")}
             </DropdownMenuItem>
+            {project.isPrivate && (
+              <DropdownMenuItem
+                onClick={() => {
+                  if (project.publicKey) {
+                    navigator.clipboard.writeText(project.publicKey);
+                    toast.success(t("pages.admin.projects_page.copy_public_key_success"));
+                  }
+                }}
+              >
+                <Copy className="mr-2 h-4 w-4" />
+                {t("pages.admin.projects_page.copy_public_key")}
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => callback("env-vars", project._id)}>
               <Edit className="mr-2 h-4 w-4" />
-              {t("Manage Env Vars")}
+              {t("pages.admin.projects_page.manage_env_vars")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => callback("manage-users", project._id)}>
               <Users className="mr-2 h-4 w-4" />
-              Manage Users
+              {t("pages.admin.projects_page.manage_users")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => callback("update", project._id)}>
               <Edit className="mr-2 h-4 w-4" />

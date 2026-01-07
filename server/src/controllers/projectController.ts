@@ -1,24 +1,44 @@
 import { Request, Response, RequestHandler } from "express";
 import { Project } from "../models/projectModel.js";
 import { encrypt, decrypt } from "../utils/cryptoUtils.js";
+import crypto from "crypto";
 
 /**
  * Creates a new project.
  */
 export const createProject: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, repoUrl, branch, autoDeploy, allowedUsers } = req.body;
+    const { name, repoUrl, branch, autoDeploy, allowedUsers, isPrivate } = req.body;
 
-    const existingProject = await Project.findOne({ repoUrl });
+    const existingProject = await Project.findOne({ repoUrl, branch });
     if (existingProject) {
-      res.status(400).json({ error: "A project with this repository URL already exists." });
+      res.status(400).json({ error: "A project with this repository URL and branch already exists." });
       return;
     }
+
+    let publicKey = "";
+    let privateKey = "";
+
+    if (isPrivate) {
+      const { publicKey: pub, privateKey: priv } = crypto.generateKeyPairSync("rsa", {
+        modulusLength: 2048,
+        publicKeyEncoding: { type: "pkcs1", format: "pem" },
+        privateKeyEncoding: { type: "pkcs1", format: "pem" },
+      });
+      publicKey = pub;
+      // Encrypt private key for storage
+      const encryptedPriv = encrypt(priv);
+      privateKey = `${encryptedPriv.iv}:${encryptedPriv.content}`;
+    }
+
     const project = new Project({
       name,
       repoUrl,
       branch,
       autoDeploy,
+      isPrivate: !!isPrivate,
+      publicKey,
+      privateKey,
       allowedUsers: allowedUsers ? [...new Set([...allowedUsers, req.userId])] : [req.userId],
       envVars: req.body.envVars
         ? req.body.envVars.map((v: { key: string; value: string }) => {
@@ -80,8 +100,25 @@ export const getProjects: RequestHandler = async (req: Request, res: Response): 
 export const updateProject: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { envVars, allowedUsers, ...otherUpdates } = req.body;
-    let updates = { ...otherUpdates, envVars, allowedUsers };
+    const { envVars, allowedUsers, isPrivate, ...otherUpdates } = req.body;
+    let updates: any = { ...otherUpdates, envVars, allowedUsers, isPrivate };
+
+    const existingProject = await Project.findById(id);
+    if (!existingProject) {
+      res.status(404).json({ error: "Project not found" });
+      return;
+    }
+
+    if (isPrivate && !existingProject.isPrivate && !existingProject.publicKey) {
+      const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+        modulusLength: 2048,
+        publicKeyEncoding: { type: "pkcs1", format: "pem" },
+        privateKeyEncoding: { type: "pkcs1", format: "pem" },
+      });
+      updates.publicKey = publicKey;
+      const encryptedPriv = encrypt(privateKey);
+      updates.privateKey = `${encryptedPriv.iv}:${encryptedPriv.content}`;
+    }
 
     if (envVars) {
       updates.envVars = envVars.map((v: { key: string; value: string }) => {

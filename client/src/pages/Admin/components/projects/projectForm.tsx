@@ -27,6 +27,7 @@ export const ProjectForm = ({ dialog, refresh, action, project }: ProjectFormPro
     repoUrl: z.string().url(),
     branch: z.string().min(1).optional(),
     autoDeploy: z.boolean().optional(),
+    isPrivate: z.boolean().optional(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -36,6 +37,7 @@ export const ProjectForm = ({ dialog, refresh, action, project }: ProjectFormPro
       repoUrl: project?.repoUrl || "",
       branch: project?.branch || "main",
       autoDeploy: project?.autoDeploy ?? true,
+      isPrivate: project?.isPrivate ?? false,
     },
   });
 
@@ -120,34 +122,58 @@ export const ProjectForm = ({ dialog, refresh, action, project }: ProjectFormPro
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="branch"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("pages.admin.projects_page.form.branch")}</FormLabel>
-                <FormControl>
-                  <Input placeholder={t("pages.admin.projects_page.form.branch_placeholder")} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="autoDeploy"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 border-border/50 transition-all">
-                <FormControl>
-                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>{t("pages.admin.projects_page.form.autoDeploy")}</FormLabel>
-                </div>
-              </FormItem>
-            )}
-          />
+        <FormField
+          control={form.control}
+          name="branch"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("pages.admin.projects_page.form.branch")}</FormLabel>
+              <FormControl>
+                <Input placeholder={t("pages.admin.projects_page.form.branch_placeholder")} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="py-2">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+              {t("pages.admin.projects_page.admin")} Settings
+            </span>
+            <div className="h-px bg-border flex-1" />
+          </div>
+          <div className="grid gap-4">
+            <FormField
+              control={form.control}
+              name="autoDeploy"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 border-border/50 transition-all hover:bg-muted/30">
+                  <FormControl>
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel className="cursor-pointer">{t("pages.admin.projects_page.form.autoDeploy")}</FormLabel>
+                    <FormDescription className="text-xs">{t("pages.admin.projects_page.form.autoDeploy_description")}</FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="isPrivate"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 border-border/50 transition-all hover:bg-muted/30">
+                  <FormControl>
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel className="cursor-pointer">{t("pages.admin.projects_page.form.isPrivate")}</FormLabel>
+                    <FormDescription className="text-xs">{t("pages.admin.projects_page.form.isPrivate_description")}</FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
         <div className="flex justify-end pt-4">
           <Button type="submit" className="w-[120px]">

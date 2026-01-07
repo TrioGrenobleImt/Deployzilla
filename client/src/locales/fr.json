@@ -364,9 +364,13 @@
         "copy_id": "Copier l'ID du projet",
         "copy_id_success": "ID du projet copié dans le presse-papiers",
         "copy_webhook_success": "URL du webhook copiée dans le presse-papiers",
+        "copy_public_key": "Copier la clé publique",
+        "copy_public_key_success": "Clé publique copiée dans le presse-papiers",
         "delete_project": "Supprimer ce projet",
         "update_project": "Modifier ce projet",
         "webhook_url": "URL du webhook",
+        "manage_env_vars": "Gérer les variables d'env",
+        "manage_users": "Gérer les utilisateurs",
         "actions_type": {
           "create": "Créer",
           "update": "Modifier",
@@ -375,7 +379,9 @@
         },
         "status": {
           "active": "Actif",
-          "inactive": "Inactif"
+          "inactive": "Inactif",
+          "private": "Privé",
+          "public": "Public"
         },
         "delete_description": "Êtes-vous sûr de vouloir supprimer le projet <strong>{{name}}</strong> ? Cette action est irréversible.",
 
@@ -386,6 +392,10 @@
           "repositoryUrlEdit": "URL du dépôt (ajouter .git)",
           "branch": "Branche",
           "autoDeploy": "Déploiement automatique",
+          "autoDeploy_description": "Lance un déploiement automatiquement lors de la réception d'un événement push via le webhook.",
+          "visibility": "Visibilité",
+          "isPrivate": "Projet privé",
+          "isPrivate_description": "Nécessite une paire de clés RSA pour accéder au dépôt. Les clés sont générées automatiquement.",
           "defaultServerConfig": "Configuration serveur par défaut (JSON)",
           "save": "Enregistrer",
           "update": "Modifier",
@@ -423,6 +433,7 @@
         "name": "Nom",
         "repoUrl": "URL du dépôt",
         "branch": "Branche",
+        "isPrivate": "Visibilité",
         "autoDeploy": "Déploiement auto",
         "webhookUrl": "URL du webhook"
       },

@@ -6,6 +6,9 @@ export interface ProjectInterface {
   autoDeploy: boolean;
   envVars?: { key: string; value: string }[];
   allowedUsers?: string[];
+  isPrivate: boolean;
+  publicKey?: string;
+  privateKey?: string;
   createdAt?: string;
   updatedAt?: string;
 }

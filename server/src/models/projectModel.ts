@@ -7,6 +7,9 @@ export interface IProject extends Document {
   autoDeploy: boolean;
   envVars: { key: string; value: string }[];
   allowedUsers: Schema.Types.ObjectId[];
+  isPrivate: boolean;
+  publicKey?: string;
+  privateKey?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,6 +27,9 @@ const ProjectSchema = new Schema<IProject>(
       },
     ],
     allowedUsers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    isPrivate: { type: Boolean, default: false },
+    publicKey: { type: String },
+    privateKey: { type: String },
   },
   { timestamps: true },
 );

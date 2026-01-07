@@ -93,11 +93,11 @@ export const Projects = () => {
           <DialogContent className="sm:max-w-[625px]">
             <DialogHeader>
               <DialogTitle>
-                  {action === "env-vars"
+                {action === "env-vars"
                   ? t(`pages.admin.projects_page.actions_type.` + action)
                   : action === "manage-users"
-                  ? "Manage Authorized Users"
-                  : `${t(`pages.admin.projects_page.actions_type.` + action)} ${t("pages.admin.projects_page.a_project")}`}
+                    ? t("pages.admin.projects_page.manage_users")
+                    : `${t(`pages.admin.projects_page.actions_type.` + action)} ${t("pages.admin.projects_page.a_project")}`}
               </DialogTitle>
             </DialogHeader>
             {action === "env-vars" && selectedProject ? (
