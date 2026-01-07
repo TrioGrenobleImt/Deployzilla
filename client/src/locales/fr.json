@@ -90,6 +90,11 @@
           "success": "Succès",
           "failed": "Échec",
           "pending": "En attente"
+        },
+        "pagination": {
+          "previous": "Précédent",
+          "next": "Suivant",
+          "page": "Affichage de {{start}} à {{end}} sur {{totalCount}} résultats"
         }
       },
       "auto_deploy": "Déploiement auto",

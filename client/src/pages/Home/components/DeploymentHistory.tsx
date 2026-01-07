@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ExternalLink, GitBranch, User, History as LuHistory, Clock } from "lucide-react";
+import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { ExternalLink, GitBranch, User, History as LuHistory, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
 
 export interface DeploymentRecord {
   id: string;
@@ -27,15 +29,30 @@ const statusBadge = {
   rolled_back: "bg-yellow-500/10 text-yellow-500 border-yellow-500/50 hover:bg-yellow-500/20",
 };
 
+const ITEMS_PER_PAGE = 10;
+
 export const DeploymentHistory = ({ history, repoUrl }: DeploymentHistoryProps) => {
   const { t } = useTranslation();
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(history.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentData = history.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
 
   return (
-    <div>
-      <CardContent className="p-4 pt-3">
+    <div className="flex flex-col h-full">
+      <CardContent className="p-4 pt-3 flex-1 overflow-auto">
         <Table>
           <TableHeader>
-            <TableRow className="hover:bg-transparent border-border/50">
+            <TableRow className="hover:bg-transparent border-border/50 font-black">
               <TableHead className="w-[100px]">{t("pages.home.history.columns.commit")}</TableHead>
               <TableHead>{t("pages.home.history.columns.trigger")}</TableHead>
               <TableHead>{t("pages.home.history.columns.environment")}</TableHead>
@@ -46,7 +63,7 @@ export const DeploymentHistory = ({ history, repoUrl }: DeploymentHistoryProps) 
             </TableRow>
           </TableHeader>
           <TableBody>
-            {history.map((record) => (
+            {currentData.map((record) => (
               <TableRow key={record.id} className="cursor-pointer group hover:bg-accent/5 border-border/50">
                 <TableCell className="font-mono text-xs">
                   <div className="flex items-center gap-1 text-accent">
@@ -108,6 +125,41 @@ export const DeploymentHistory = ({ history, repoUrl }: DeploymentHistoryProps) 
           </TableBody>
         </Table>
       </CardContent>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-6 py-4 border-t border-border/50 bg-muted/20">
+          <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">
+            {t("pages.home.history.pagination.page", {
+              start: startIndex + 1,
+              end: Math.min(startIndex + ITEMS_PER_PAGE, history.length),
+              totalCount: history.length,
+            })}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+              className="h-8 px-3 text-[10px] font-black uppercase tracking-widest bg-background/50 hover:bg-accent hover:text-white transition-all border-border/50"
+            >
+              <ChevronLeft className="w-3 h-3 mr-1" />
+              {t("pages.home.history.pagination.previous")}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className="h-8 px-3 text-[10px] font-black uppercase tracking-widest bg-background/50 hover:bg-accent hover:text-white transition-all border-border/50"
+            >
+              {t("pages.home.history.pagination.next")}
+              <ChevronRight className="w-3 h-3 ml-1" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

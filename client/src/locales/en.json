@@ -80,6 +80,11 @@
           "success": "Success",
           "failed": "Failed",
           "pending": "Pending"
+        },
+        "pagination": {
+          "previous": "Previous",
+          "next": "Next",
+          "page": "Showing {{start}} to {{end}} of {{totalCount}} results"
         }
       },
       "auto_deploy": "Auto-Deploy",
@@ -412,7 +417,7 @@
       "delete_title": "Delete all entities",
       "delete_description": "Are you sure you want to delete all entities? This action cannot be undone.",
       "footer": {
-        "page": "Page",
+        "page": "Showing {{start}} to {{end}} of {{totalCount}} results",
         "of": "of",
         "total": "total",
         "entries": "entries",
