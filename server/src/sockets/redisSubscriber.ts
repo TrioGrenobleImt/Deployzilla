@@ -46,7 +46,7 @@ export function initRedisSubscriber() {
               type: "log",
               data: {
                 id: `log-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                timestamp: new Date().toLocaleTimeString(),
+                timestamp: new Date().toISOString(),
                 level: content.toLowerCase().includes("error") || content.toLowerCase().includes("failed") ? "error" : "info",
                 message: content,
                 pipelineId: pipelineId,

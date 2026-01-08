@@ -68,7 +68,21 @@ export const PipelineLogs = ({ logs }: PipelineLogsProps) => {
         <div className="h-full w-full overflow-auto p-4 space-y-1 scrollbar-thin scrollbar-thumb-border" ref={scrollRef}>
           {filteredLogs.map((log) => (
             <div key={log.id} className="flex gap-4 text-[10px] py-1 px-2 rounded group hover:bg-muted/50 transition-colors">
-              <span className="text-muted-foreground/50 shrink-0 w-20 font-mono">{log.timestamp}</span>
+              <span className="text-muted-foreground/50 shrink-0 w-20 font-mono">
+                {(() => {
+                  const date = new Date(log.timestamp);
+                  // Check if valid date
+                  if (!isNaN(date.getTime())) {
+                    return date.toLocaleTimeString(undefined, {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    });
+                  }
+                  // Fallback for old logs (already formatted strings)
+                  return log.timestamp;
+                })()}
+              </span>
               {log.step && (
                 <span className="text-muted-foreground font-black shrink-0 w-24 uppercase truncate">
                   [{t(`pages.home.pipeline.stages.${log.step.toLowerCase()}`)}]
