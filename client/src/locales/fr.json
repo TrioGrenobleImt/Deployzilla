@@ -63,6 +63,7 @@
           "dépendances": "Dépendances",
           "eslint": "ESLint",
           "tests_unitaires": "Tests unitaires",
+          "sonarqube": "SonarQube",
           "build": "Build",
           "déploiement": "Déploiement",
           "tests_intrusions": "Tests Intrusions"

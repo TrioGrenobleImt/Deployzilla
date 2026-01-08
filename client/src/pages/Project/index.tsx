@@ -28,7 +28,6 @@ import { Button } from "@/components/ui/button";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { axiosConfig } from "@/config/axiosConfig";
-import { cn } from "@/lib/utils";
 
 export const Project = () => {
   const { t } = useTranslation();
@@ -47,9 +46,10 @@ export const Project = () => {
     { id: "2", name: "Dépendances", status: "pending", icon: Package },
     { id: "3", name: "Eslint", status: "pending", icon: Search },
     { id: "4", name: "Tests unitaires", status: "pending", icon: FlaskConical },
-    { id: "5", name: "Build", status: "pending", icon: Container },
-    { id: "6", name: "Déploiement", status: "pending", icon: Rocket },
-    { id: "7", name: "Tests Intrusions", status: "pending", icon: ShieldAlert },
+    { id: "5", name: "Sonarqube", status: "pending", icon: Activity },
+    { id: "6", name: "Build", status: "pending", icon: Container },
+    { id: "7", name: "Déploiement", status: "pending", icon: Rocket },
+    { id: "8", name: "Tests Intrusions", status: "pending", icon: ShieldAlert },
   ];
 
   const [stages, setStages] = useState<PipelineStage[]>(initialStages);
@@ -167,21 +167,26 @@ export const Project = () => {
       tests: "4",
       "NPM-TEST": "4",
       "npm-test": "4",
+      // SonarQube stage
+      sonarqube: "5",
+      SONARQUBE: "5",
+      SONAR: "5",
+      sonar: "5",
       // Build stage
-      "docker-build": "5",
-      "DOCKER-BUILD": "5",
-      BUILD: "5",
-      build: "5",
+      "docker-build": "6",
+      "DOCKER-BUILD": "6",
+      BUILD: "6",
+      build: "6",
       // Deploy stage
-      deploy: "6",
-      DEPLOY: "6",
-      "kubernetes-prep": "6",
-      "KUBERNETES-PREP": "6",
+      deploy: "7",
+      DEPLOY: "7",
+      "kubernetes-prep": "7",
+      "KUBERNETES-PREP": "7",
       // Intrusion Tests stage
-      "intrusion-tests": "7",
-      "INTRUSION-TESTS": "7",
-      INTRUSION: "7",
-      intrusion: "7",
+      "intrusion-tests": "8",
+      "INTRUSION-TESTS": "8",
+      INTRUSION: "8",
+      intrusion: "8",
     };
 
     const runningStageId = stageMap[currentStage] || stageMap[currentStage.toUpperCase()];

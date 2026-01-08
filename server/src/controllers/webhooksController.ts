@@ -150,9 +150,27 @@ export const handleManualTrigger: RequestHandler = async (req: Request, res: Res
         triggerAuthor: author,
         author: author, // Set it immediately too
       });
-    }
+      await Pipeline.findByIdAndUpdate(latestPipeline._id, {
+        trigger: "manual",
+        triggerAuthor: author,
+        author: author, // Set it immediately too
+      });
 
-    io?.emit("pipeline-started", { projectId: project.id });
+      io?.emit("pipeline-started", {
+        projectId: project.id,
+        pipelineId: latestPipeline._id,
+        pipeline: {
+          _id: latestPipeline._id,
+          commitHash: latestPipeline.commitHash,
+          author: author,
+          trigger: "manual",
+          createdAt: latestPipeline.createdAt,
+        },
+      });
+    } else {
+      // Fallback if no pipeline found (unlikely if runner worked)
+      io?.emit("pipeline-started", { projectId: project.id });
+    }
 
     createLog({
       message: `User ${author} manually triggered pipeline for project ${project.name}`,

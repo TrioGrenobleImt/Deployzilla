@@ -139,6 +139,11 @@ export function initRedisSubscriber() {
 
           await Pipeline.findByIdAndUpdate(pipelineId, updateData);
           console.log(`Updated pipeline ${pipelineId} to status ${status}, currentStage: ${currentJobName}`);
+
+          // Emit generic update event to trigger history refresh
+          if (projectId) {
+            io?.emit("pipeline-updated", { projectId });
+          }
         }
 
         // Emit pipeline-started when first transitioning to RUNNING
@@ -181,19 +186,24 @@ export function initRedisSubscriber() {
               TESTS: "4",
               "npm-test": "4",
               "NPM-TEST": "4",
-              // Stage 5: Build
-              "docker-build": "5",
-              "DOCKER-BUILD": "5",
-              BUILD: "5",
-              // Stage 6: Déploiement
-              deploy: "6",
-              DEPLOY: "6",
-              "kubernetes-prep": "6",
-              "KUBERNETES-PREP": "6",
-              // Stage 7: Tests Intrusions
-              "intrusion-tests": "7",
-              "INTRUSION-TESTS": "7",
-              INTRUSION: "7",
+              // Stage 5: SonarQube
+              sonarqube: "5",
+              SONARQUBE: "5",
+              SONAR: "5",
+              sonar: "5",
+              // Stage 6: Build
+              "docker-build": "6",
+              "DOCKER-BUILD": "6",
+              BUILD: "6",
+              // Stage 7: Déploiement
+              deploy: "7",
+              DEPLOY: "7",
+              "kubernetes-prep": "7",
+              "KUBERNETES-PREP": "7",
+              // Stage 8: Tests Intrusions
+              "intrusion-tests": "8",
+              "INTRUSION-TESTS": "8",
+              INTRUSION: "8",
             };
             const stageId = stageMap[runningJob.name] || stageMap[runningJob.name.toUpperCase()];
             if (stageId && projectId) {
