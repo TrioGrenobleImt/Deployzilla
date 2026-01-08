@@ -45,8 +45,7 @@ export const createProject: RequestHandler = async (req: Request, res: Response)
       allowedUsers: allowedUsers ? [...new Set([...allowedUsers, req.userId])] : [req.userId],
       envVars: req.body.envVars
         ? req.body.envVars.map((v: { key: string; value: string }) => {
-            const encrypted = encrypt(v.value);
-            return { key: v.key, value: `${encrypted.iv}:${encrypted.content}` };
+            return { key: v.key, value: v.value };
           })
         : [],
     });
@@ -132,8 +131,7 @@ export const updateProject: RequestHandler = async (req: Request, res: Response)
 
     if (envVars) {
       updates.envVars = envVars.map((v: { key: string; value: string }) => {
-        const encrypted = encrypt(v.value);
-        return { key: v.key, value: `${encrypted.iv}:${encrypted.content}` };
+        return { key: v.key, value: v.value };
       });
     }
 
@@ -232,7 +230,7 @@ export const getProjectStats: RequestHandler = async (req: Request, res: Respons
     const activeProjectsResult = await Pipeline.aggregate([
       { $match: { updatedAt: { $gte: thirtyDaysAgo } } },
       { $group: { _id: "$projectId" } },
-      { $count: "count" }
+      { $count: "count" },
     ]);
     const activeProjects = activeProjectsResult.length > 0 ? activeProjectsResult[0].count : 0;
 
@@ -247,7 +245,6 @@ export const getProjectStats: RequestHandler = async (req: Request, res: Respons
       failedPipelines,
       activeProjects,
     });
-
   } catch (error) {
     console.error("Error getting project stats:", error);
     res.status(500).json({ error: "Internal Server Error" });
