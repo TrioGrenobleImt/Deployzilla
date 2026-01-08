@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createProject, getProjects, updateProject, deleteProject } from "../controllers/projectController.js";
+import { createProject, getProjects, updateProject, deleteProject, getProjectStats } from "../controllers/projectController.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 import { userRoles } from "../utils/enums/userRoles.js";
 
@@ -10,6 +10,13 @@ export const projectRouter = Router();
  * @access Private
  */
 projectRouter.get("/", verifyToken(), getProjects);
+
+/**
+ * @route GET /api/projects/stats
+ * @access Private/Admin
+ */
+projectRouter.get("/stats", verifyToken({ role: userRoles.ADMIN }), getProjectStats);
+
 
 /**
  * @route POST /api/projects

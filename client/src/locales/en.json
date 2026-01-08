@@ -32,9 +32,13 @@
         "uptime": "Uptime",
         "resp_time": "Avg. Response Time",
         "success_rate": "Success Rate",
-        "avg_duration": "Avg. Deployment Time",
         "total_deployments": "Total Deployments",
-        "deployments_this_week": "Deployments This Week"
+        "deployments_this_week": "Deployments This Week",
+        "most_active_project": "Most Active Project",
+        "top_deployer": "Top Contributor",
+        "deployments_today": "Deployments Today",
+        "failed_deployments": "Failed Deployments",
+        "active_projects": "Active Projects (30d)"
       },
       "empty_state": {
         "admin": {
@@ -270,7 +274,9 @@
       "back_to_app": "Back to home",
       "dashboard_page": {
         "active_users": "Active Users",
+        "active_users_desc": "Users currently connected",
         "total_users": "Total Users",
+        "registered_users_count": "Total registered accounts",
         "auth_methods": "Authentication Methods",
         "auth_methods_description": "This section shows the number of users registered with each authentication method.",
         "of_users": "of all users"

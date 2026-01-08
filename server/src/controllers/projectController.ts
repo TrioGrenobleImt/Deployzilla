@@ -1,5 +1,6 @@
 import { Request, Response, RequestHandler } from "express";
 import { Project } from "../models/projectModel.js";
+import { Pipeline } from "../models/pipelineModel.js";
 import { encrypt, decrypt } from "../utils/cryptoUtils.js";
 import crypto from "crypto";
 import { createLog } from "./logController.js";
@@ -177,6 +178,78 @@ export const deleteProject: RequestHandler = async (req: Request, res: Response)
     res.status(200).json({ message: "Project deleted successfully" });
   } catch (error) {
     console.error("Error deleting project:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+/**
+ * Gets project statistics for the dashboard.
+ */
+export const getProjectStats: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const totalProjects = await Project.countDocuments();
+    const totalPipelines = await Pipeline.countDocuments();
+
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const pipelinesThisWeek = await Pipeline.countDocuments({ updatedAt: { $gte: oneWeekAgo } });
+
+    const successPipelines = await Pipeline.countDocuments({ status: "SUCCESS" });
+    const successRate = totalPipelines > 0 ? (successPipelines / totalPipelines) * 100 : 0;
+
+    // Most Active Project
+    const mostActiveProjectResult = await Pipeline.aggregate([
+      { $group: { _id: "$projectId", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 1 },
+    ]);
+
+    let mostActiveProjectName = "N/A";
+    if (mostActiveProjectResult.length > 0) {
+      const project = await Project.findById(mostActiveProjectResult[0]._id);
+      if (project) {
+        mostActiveProjectName = project.name;
+      }
+    }
+
+    // Top Author (Deployer)
+    const topAuthorResult = await Pipeline.aggregate([
+      { $match: { author: { $exists: true, $ne: null } } },
+      { $group: { _id: "$author", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 1 },
+    ]);
+    const topAuthor = topAuthorResult.length > 0 ? topAuthorResult[0]._id : "N/A";
+
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const pipelinesToday = await Pipeline.countDocuments({ updatedAt: { $gte: startOfToday } });
+
+    const failedPipelines = await Pipeline.countDocuments({ status: "FAILED" });
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const activeProjectsResult = await Pipeline.aggregate([
+      { $match: { updatedAt: { $gte: thirtyDaysAgo } } },
+      { $group: { _id: "$projectId" } },
+      { $count: "count" }
+    ]);
+    const activeProjects = activeProjectsResult.length > 0 ? activeProjectsResult[0].count : 0;
+
+    res.status(200).json({
+      totalProjects,
+      totalPipelines,
+      pipelinesThisWeek,
+      successRate,
+      mostActiveProject: mostActiveProjectName,
+      topAuthor,
+      pipelinesToday,
+      failedPipelines,
+      activeProjects,
+    });
+
+  } catch (error) {
+    console.error("Error getting project stats:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };

@@ -38,9 +38,13 @@
         "uptime": "Disponibilité",
         "resp_time": "Temps de rép. moyen",
         "success_rate": "Taux de succès",
-        "avg_duration": "Durée moyenne",
         "total_deployments": "Total des déploiements",
-        "deployments_this_week": "Déploiements cette semaine"
+        "deployments_this_week": "Déploiements cette semaine",
+        "most_active_project": "Projet le plus actif",
+        "top_deployer": "Contributeur principal",
+        "deployments_today": "Déploiements aujourd'hui",
+        "failed_deployments": "Déploiements échoués",
+        "active_projects": "Projets actifs (30j)"
       },
       "empty_state": {
         "admin": {
@@ -280,7 +284,9 @@
       "back_to_app": "Retour à l'accueil",
       "dashboard_page": {
         "active_users": "Utilisateurs actifs",
+        "active_users_desc": "Utilisateurs actuellement connectés",
         "total_users": "Utilisateurs totaux",
+        "registered_users_count": "Nombre total de comptes inscrits",
         "auth_methods": "Méthodes d'authentification",
         "auth_methods_description": "Cette section indique le nombre d'utilisateurs inscrits par méthode d'authentification.",
         "of_users": "des utilisateurs"
