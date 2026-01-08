@@ -38,6 +38,7 @@
         "uptime": "Disponibilité",
         "resp_time": "Temps de rép. moyen",
         "success_rate": "Taux de succès",
+        "avg_duration": "Durée moyenne",
         "total_deployments": "Total des déploiements",
         "deployments_this_week": "Déploiements cette semaine",
         "most_active_project": "Projet le plus actif",
@@ -79,6 +80,10 @@
         "deploying": "Déploiement en cours...",
         "redeploy": "Redéployer",
         "rollback": "Rollback",
+        "rollback_title": "Revenir à une version précédente",
+        "rollback_desc": "Sélectionnez un déploiement réussi précédent à restaurer. Cela déclenchera un nouveau déploiement en utilisant le commit sélectionné.",
+        "confirm_rollback": "Confirmer le retour arrière",
+        "no_history": "Aucun déploiement réussi trouvé dans l'historique.",
         "no_permission": "Vous n'avez pas la permission de déployer sur cet environnement."
       },
       "history": {
@@ -124,7 +129,8 @@
       },
       "toasts": {
         "deploy_started": "Déploiement lancé avec succès",
-        "deploy_failed": "Échec du lancement du déploiement"
+        "deploy_failed": "Échec du lancement du déploiement",
+        "rollback_started": "Rollback lancé avec succès"
       }
     },
     "account": {

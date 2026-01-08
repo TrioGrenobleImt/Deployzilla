@@ -11,10 +11,10 @@ import { io } from "../sockets/socket.js";
 /**
  * Triggers the pipeline runner via cURL
  */
-const triggerPipeline = async (projectId: string, commitHash?: string, author?: string): Promise<string> => {
+const triggerPipeline = async (projectId: string, trigger: string, commitHash?: string, author?: string): Promise<string> => {
   const runnerUrl = process.env.PIPELINE_RUNNER_URL;
 
-  const payload = JSON.stringify({ projectId, commitHash, author });
+  const payload = JSON.stringify({ projectId, trigger, commitHash, author });
   const curlCommand = `curl -X POST "${runnerUrl}" -H "Content-Type: application/json" -d '${payload}'`;
 
   const { stdout, stderr } = await new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
@@ -62,7 +62,7 @@ export const handleGitHubWebhook: RequestHandler = async (req: Request, res: Res
 
     if (project && project.autoDeploy && project.branch === branch) {
       try {
-        const stdout = await triggerPipeline(project.id, commitHash, username);
+        const stdout = await triggerPipeline(project.id, "github", commitHash, username);
 
         // Find the newly created pipeline and update its trigger intent
         const latestPipeline = await Pipeline.findOne({ projectId: project.id }).sort({ createdAt: -1 });
@@ -102,7 +102,7 @@ export const handleGitHubWebhook: RequestHandler = async (req: Request, res: Res
  */
 export const handleManualTrigger: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { projectId } = req.body;
+    const { projectId, commitHash } = req.body;
 
     if (!projectId) {
       res.status(400).json({ error: "Project ID is required" });
@@ -124,37 +124,55 @@ export const handleManualTrigger: RequestHandler = async (req: Request, res: Res
       author = `${formattedForename} ${user.name}`;
     }
 
-    const stdout = await triggerPipeline(project.id, undefined, author);
+    const startTime = new Date();
+    const stdout = await triggerPipeline(project.id, "manual", commitHash, author);
+    console.log("Runner output:", stdout);
 
     let pipelineId: string | undefined;
     try {
       const responseCtx = JSON.parse(stdout);
-      // Adjust based on actual runner response structure. Likely just the object or { _id: ... }
       pipelineId = responseCtx._id || responseCtx.id || responseCtx.pipelineId;
+      console.log("Parsed Pipeline ID:", pipelineId);
     } catch (e) {
       console.warn("Failed to parse runner stdout:", e);
     }
 
-    // Find the pipeline to update
+    // Attempt to find the new pipeline.
+    // If we have an ID, great. If not, we poll for a pipeline created AFTER our start time.
     let latestPipeline;
-    if (pipelineId) {
-      latestPipeline = await Pipeline.findById(pipelineId);
-    } else {
-      // Fallback to sort if ID parsing failed
-      latestPipeline = await Pipeline.findOne({ projectId: project.id }).sort({ createdAt: -1 });
+    let attempts = 0;
+    while (attempts < 5) {
+      if (pipelineId) {
+        latestPipeline = await Pipeline.findById(pipelineId);
+      } else {
+        // Find the most recent pipeline for this project
+        const candidate = await Pipeline.findOne({ projectId: project.id }).sort({ createdAt: -1 });
+
+        // Check if it's actually new (created after we started this request - buffer of 1s)
+        if (candidate && new Date(candidate.createdAt).getTime() >= startTime.getTime() - 1000) {
+          latestPipeline = candidate;
+        }
+      }
+
+      if (latestPipeline) break;
+
+      // Wait 500ms before retrying
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      attempts++;
     }
 
     if (latestPipeline) {
-      await Pipeline.findByIdAndUpdate(latestPipeline._id, {
-        trigger: "manual",
-        triggerAuthor: author,
-        author: author, // Set it immediately too
-      });
-      await Pipeline.findByIdAndUpdate(latestPipeline._id, {
-        trigger: "manual",
-        triggerAuthor: author,
-        author: author, // Set it immediately too
-      });
+      // Ensure we overwrite explicitly
+      const result = await Pipeline.findByIdAndUpdate(
+        latestPipeline._id,
+        {
+          trigger: "manual",
+          triggerAuthor: author,
+          author: author,
+        },
+        { new: true },
+      );
+      console.log("Updated pipeline metadata:", result?.trigger, result?.author);
 
       io?.emit("pipeline-started", {
         projectId: project.id,

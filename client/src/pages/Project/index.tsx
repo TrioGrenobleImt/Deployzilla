@@ -4,6 +4,7 @@ import { PipelineTimeline, PipelineStage } from "../Home/components/PipelineTime
 import { PipelineLogs, LogEntry } from "../Home/components/PipelineLogs";
 import { DeploymentControls } from "../Home/components/DeploymentControls";
 import { DeploymentHistory, DeploymentRecord } from "../Home/components/DeploymentHistory";
+import { RollbackDialog } from "../Home/components/RollbackDialog";
 import {
   Zap,
   Activity,
@@ -341,7 +342,10 @@ export const Project = () => {
           startTime: startTime,
         };
 
-        setHistory((prev) => [inProgressRecord, ...prev]);
+        setHistory((prev) => {
+          if (prev.some((h) => h.id === inProgressRecord.id)) return prev;
+          return [inProgressRecord, ...prev];
+        });
       }
     });
 
@@ -374,6 +378,31 @@ export const Project = () => {
       setIsDeploying(false);
     }
   };
+
+  const handleRollback = async (commitHash: string) => {
+    if (!selectedProject) return;
+
+    try {
+      setIsDeploying(true);
+      setLogs([]);
+      // Optimistic update for timeline
+      setStages(initialStages.map((s, i) => (i === 0 ? { ...s, status: "running" } : s)));
+
+      const response = await axiosConfig.post("/webhooks/trigger", {
+        projectId: selectedProject._id,
+        commitHash, // Pass the specific commit hash
+      });
+
+      toast.success(t("pages.project.toasts.rollback_started"));
+      console.log(response.data.message);
+      fetchHistory();
+    } catch (error: any) {
+      toast.error(error.response?.data?.error);
+      setIsDeploying(false);
+    }
+  };
+
+  const [showRollback, setShowRollback] = useState(false);
 
   // Calculate real stats from history (exclude running/pending for stats)
   const completedHistory = history.filter((h) => h.status !== "running" && h.status !== "pending");
@@ -499,7 +528,7 @@ export const Project = () => {
               <DeploymentControls
                 onDeploy={handleDeploy}
                 onRedeploy={() => {}}
-                onRollback={() => {}}
+                onRollback={() => setShowRollback(true)}
                 canDeploy={authUser?.role === "admin"}
                 isDeploying={isDeploying}
               />
@@ -598,6 +627,8 @@ export const Project = () => {
           </div>
         </section>
       </div>
+
+      <RollbackDialog isOpen={showRollback} onClose={() => setShowRollback(false)} onConfirm={handleRollback} history={history} />
     </div>
   );
 };
