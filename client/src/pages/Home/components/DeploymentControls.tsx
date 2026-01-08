@@ -1,17 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { Play, RotateCcw, History, AlertCircle, Loader2 } from "lucide-react";
+import { Play, RotateCcw, History, AlertCircle, Loader2, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
 interface DeploymentControlsProps {
   onDeploy: () => void;
-  onRedeploy: () => void;
+  onViewLive: () => void;
   onRollback: () => void;
   canDeploy: boolean;
   isDeploying: boolean;
 }
 
-export const DeploymentControls = ({ onDeploy, onRedeploy, onRollback, canDeploy, isDeploying }: DeploymentControlsProps) => {
+export const DeploymentControls = ({ onDeploy, onViewLive, onRollback, canDeploy, isDeploying }: DeploymentControlsProps) => {
   const { t } = useTranslation();
 
   return (
@@ -32,12 +32,11 @@ export const DeploymentControls = ({ onDeploy, onRedeploy, onRollback, canDeploy
       <div className="grid grid-cols-2 gap-4">
         <Button
           variant="outline"
-          onClick={onRedeploy}
-          disabled={isDeploying}
-          className="h-12 border-border/50 hover:bg-accent/10 hover:text-accent transition-colors"
+          onClick={onViewLive}
+          className="h-12 border-border/50 hover:bg-green-500/10 hover:text-green-500 transition-colors"
         >
-          <RotateCcw className="mr-2 h-4 w-4" />
-          {t("pages.home.controls.redeploy")}
+          <ExternalLink className="mr-2 h-4 w-4" />
+          {t("pages.home.controls.view_live")}
         </Button>
         <Button
           variant="outline"

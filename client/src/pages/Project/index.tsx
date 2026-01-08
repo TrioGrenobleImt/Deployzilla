@@ -527,7 +527,7 @@ export const Project = () => {
             <div className="bg-background/60 dark:bg-zinc-900/40 backdrop-blur-md rounded-[2.5rem] border border-border/50 p-8 shadow-xl shadow-black/5 h-full flex flex-col justify-center">
               <DeploymentControls
                 onDeploy={handleDeploy}
-                onRedeploy={() => {}}
+                onViewLive={() => window.open("http://localhost:3000", "_blank")}
                 onRollback={() => setShowRollback(true)}
                 canDeploy={authUser?.role === "admin"}
                 isDeploying={isDeploying}

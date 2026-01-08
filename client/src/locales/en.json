@@ -69,6 +69,7 @@
         "run_pipeline": "Run Pipeline",
         "deploying": "Deploying...",
         "redeploy": "Redeploy",
+        "view_live": "View Live App",
         "rollback": "Rollback",
         "rollback_title": "Rollback to version",
         "rollback_desc": "Select a previous successful deployment to restore. This will trigger a new deployment using the selected commit.",
