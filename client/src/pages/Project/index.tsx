@@ -95,7 +95,7 @@ export const Project = () => {
           return {
             id: p._id,
             commitHash: p.commitHash || "---",
-            trigger: (p.commitHash ? "github" : "manual") as "github" | "manual",
+            trigger: (p.trigger ? p.trigger : p.commitHash ? "github" : "manual") as "github" | "manual",
             environment: "production",
             status: p.status.toLowerCase() as any,
             duration: durationStr,
@@ -292,7 +292,7 @@ export const Project = () => {
         const completedRecord: DeploymentRecord = {
           id: pipeline._id,
           commitHash: pipeline.commitHash || "---",
-          trigger: (pipeline.commitHash ? "github" : "manual") as "github" | "manual",
+          trigger: (pipeline.trigger ? pipeline.trigger : pipeline.commitHash ? "github" : "manual") as "github" | "manual",
           environment: "production",
           status: pipeline.status.toLowerCase() as any,
           duration: durationStr,
@@ -327,7 +327,7 @@ export const Project = () => {
         const inProgressRecord: DeploymentRecord = {
           id: pipeline._id,
           commitHash: pipeline.commitHash || "---",
-          trigger: (pipeline.commitHash ? "github" : "manual") as "github" | "manual",
+          trigger: (pipeline.trigger ? pipeline.trigger : pipeline.commitHash ? "github" : "manual") as "github" | "manual",
           environment: "production",
           status: "running" as any,
           duration: "En cours...",

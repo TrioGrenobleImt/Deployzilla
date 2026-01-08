@@ -23,7 +23,7 @@ export function initRedisSubscriber() {
   redisSubscriberClient.on("message", async (channel, message) => {
     try {
       if (channel === "pipeline-logs") {
-        console.log("Raw Redis log received:", message);
+        console.log(`[DEBUG] Received Redis message on ${channel}: ${message.substring(0, 200)}...`);
         let event;
 
         // Try to parse as JSON first
@@ -126,6 +126,17 @@ export function initRedisSubscriber() {
           if (currentJobName) {
             updateData.currentStage = currentJobName;
           }
+
+          // Enforce author protection for manual triggers
+          // If we have a triggerAuthor (intent), and we are manual, we trust OUR triggerAuthor
+          const currentTrigger = updateData.trigger || existingPipeline.trigger;
+          const currentTriggerAuthor = updateData.triggerAuthor || existingPipeline.triggerAuthor;
+
+          if (currentTrigger === "manual" && currentTriggerAuthor) {
+            // Force author to be the triggerAuthor (prevent overwrites from runner/commit hash)
+            updateData.author = currentTriggerAuthor;
+          }
+
           await Pipeline.findByIdAndUpdate(pipelineId, updateData);
           console.log(`Updated pipeline ${pipelineId} to status ${status}, currentStage: ${currentJobName}`);
         }
@@ -140,6 +151,7 @@ export function initRedisSubscriber() {
               _id: pipeline?._id,
               commitHash: pipeline?.commitHash,
               author: pipeline?.author,
+              trigger: pipeline?.trigger,
               createdAt: pipeline?.createdAt,
             },
           });

@@ -1,7 +1,9 @@
 import { Request, Response, RequestHandler } from "express";
 // import { verifyGitHubSignature } from "../utils/cryptoUtils.js";
+// import { redisClient } from "../utils/redisClient.js";
 import { Project } from "../models/projectModel.js";
 import { User } from "../models/userModel.js";
+import { Pipeline } from "../models/pipelineModel.js";
 import { createLog } from "./logController.js";
 import { logLevels } from "../utils/enums/logLevels.js";
 import { io } from "../sockets/socket.js";
@@ -51,7 +53,8 @@ export const handleGitHubWebhook: RequestHandler = async (req: Request, res: Res
     const repoUrl = repository.clone_url;
     const sshUrl = repository.ssh_url;
     const commitHash = rawPayload.head_commit?.id || rawPayload.after;
-    const author = rawPayload.head_commit?.committer?.username || rawPayload.head_commit?.committer?.name || rawPayload.pusher?.name;
+    const username = rawPayload.head_commit?.committer?.username || rawPayload.head_commit?.committer?.name || rawPayload.pusher?.name;
+    const author = `${username} via Github`;
 
     const project = await Project.findOne({
       $or: [{ repoUrl: repoUrl }, { repoUrl: sshUrl }],
@@ -59,7 +62,17 @@ export const handleGitHubWebhook: RequestHandler = async (req: Request, res: Res
 
     if (project && project.autoDeploy && project.branch === branch) {
       try {
-        const stdout = await triggerPipeline(project.id, commitHash, author);
+        const stdout = await triggerPipeline(project.id, commitHash, username);
+
+        // Find the newly created pipeline and update its trigger intent
+        const latestPipeline = await Pipeline.findOne({ projectId: project.id }).sort({ createdAt: -1 });
+        if (latestPipeline) {
+          await Pipeline.findByIdAndUpdate(latestPipeline._id, {
+            trigger: "github",
+            triggerAuthor: username, // Use username for GitHub
+            author: username,
+          });
+        }
 
         io?.emit("pipeline-started", { projectId: project.id });
 
@@ -104,9 +117,40 @@ export const handleManualTrigger: RequestHandler = async (req: Request, res: Res
     }
 
     const user = await User.findById(req.userId);
-    const author = user?.username || "Unknown";
+    let author = "Unknown via Deployzilla";
+
+    if (user) {
+      const formattedForename = user.forename.charAt(0).toUpperCase() + user.forename.slice(1).toLowerCase();
+      author = `${formattedForename} ${user.name}`;
+    }
 
     const stdout = await triggerPipeline(project.id, undefined, author);
+
+    let pipelineId: string | undefined;
+    try {
+      const responseCtx = JSON.parse(stdout);
+      // Adjust based on actual runner response structure. Likely just the object or { _id: ... }
+      pipelineId = responseCtx._id || responseCtx.id || responseCtx.pipelineId;
+    } catch (e) {
+      console.warn("Failed to parse runner stdout:", e);
+    }
+
+    // Find the pipeline to update
+    let latestPipeline;
+    if (pipelineId) {
+      latestPipeline = await Pipeline.findById(pipelineId);
+    } else {
+      // Fallback to sort if ID parsing failed
+      latestPipeline = await Pipeline.findOne({ projectId: project.id }).sort({ createdAt: -1 });
+    }
+
+    if (latestPipeline) {
+      await Pipeline.findByIdAndUpdate(latestPipeline._id, {
+        trigger: "manual",
+        triggerAuthor: author,
+        author: author, // Set it immediately too
+      });
+    }
 
     io?.emit("pipeline-started", { projectId: project.id });
 

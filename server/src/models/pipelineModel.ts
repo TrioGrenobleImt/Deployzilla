@@ -9,6 +9,8 @@ export interface IPipeline extends Document {
   currentStage?: string;
   commitHash?: string;
   author?: string;
+  trigger?: string;
+  triggerAuthor?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -23,6 +25,8 @@ const PipelineSchema = new Schema<IPipeline>(
     currentStage: { type: String },
     commitHash: { type: String },
     author: { type: String },
+    trigger: { type: String },
+    triggerAuthor: { type: String },
   },
   { timestamps: true, _id: false },
 );

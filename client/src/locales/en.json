@@ -102,7 +102,7 @@
       "live_output_stream": "Live Output Stream",
       "triggers": {
         "push": "Push",
-        "manual": "Manual",
+        "manual": "DeployZilla",
         "api": "API",
         "webhook": "Webhook",
         "github": "GitHub"

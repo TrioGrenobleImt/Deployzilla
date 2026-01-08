@@ -112,7 +112,7 @@
       "live_output_stream": "Flux de sortie en direct",
       "triggers": {
         "push": "Push",
-        "manual": "Manuel",
+        "manual": "DeployZilla",
         "api": "API",
         "webhook": "Webhook",
         "github": "GitHub"
