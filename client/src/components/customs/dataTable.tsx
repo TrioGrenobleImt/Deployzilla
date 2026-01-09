@@ -257,9 +257,11 @@ export function DataTable<TData, TValue>({
       <Separator />
       <div className="flex flex-col items-center justify-between gap-4 p-4 md:flex-row">
         <div className="text-sm">
-          {t("components.dataTable.footer.page")} <strong>{table.getState().pagination.pageIndex + 1}</strong>{" "}
-          {t("components.dataTable.footer.of")} <strong>{table.getPageCount()}</strong> • {dataCount}{" "}
-          {t("components.dataTable.footer.total")} {t("components.dataTable.footer.entries")}
+          {t("components.dataTable.footer.page", {
+            start: table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1,
+            end: Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, dataCount),
+            totalCount: dataCount,
+          })}
         </div>
         <div className="flex flex-col items-center sm:flex-row sm:items-start gap-4">
           <div className="flex items-center space-x-2 ">

@@ -474,7 +474,7 @@
       "delete_title": "Supprimer toutes les entités",
       "delete_description": "Êtes-vous sûr de vouloir supprimer toutes les entités ? Cette action est irréversible.",
       "footer": {
-        "page": "Page",
+        "page": "Affichage de {{start}} à {{end}} sur {{totalCount}} résultats",
         "of": "sur",
         "total": "total",
         "entries": "entrées",

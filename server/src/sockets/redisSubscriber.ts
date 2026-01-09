@@ -201,9 +201,9 @@ export function initRedisSubscriber() {
               "kubernetes-prep": "7",
               "KUBERNETES-PREP": "7",
               // Stage 8: Tests Intrusions
-              "intrusion-tests": "8",
-              "INTRUSION-TESTS": "8",
-              INTRUSION: "8",
+              // "intrusion-tests": "8",
+              // "INTRUSION-TESTS": "8",
+              // INTRUSION: "8",
             };
             const stageId = stageMap[runningJob.name] || stageMap[runningJob.name.toUpperCase()];
             if (stageId && projectId) {

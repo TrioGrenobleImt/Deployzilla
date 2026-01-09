@@ -50,7 +50,7 @@ export const Project = () => {
     { id: "5", name: "Sonarqube", status: "pending", icon: Activity },
     { id: "6", name: "Build", status: "pending", icon: Container },
     { id: "7", name: "Déploiement", status: "pending", icon: Rocket },
-    { id: "8", name: "Tests Intrusions", status: "pending", icon: ShieldAlert },
+    // { id: "8", name: "Tests Intrusions", status: "pending", icon: ShieldAlert },
   ];
 
   const [stages, setStages] = useState<PipelineStage[]>(initialStages);
